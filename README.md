@@ -18,7 +18,7 @@ from mlg import IntegratedLogger
 
 record_param = {
     "description": "TEST"
-}
+}  #  Used to name the log dir
 
 logger = IntegratedLogger(record_param, log_root="logs")
 
