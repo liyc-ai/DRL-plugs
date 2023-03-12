@@ -24,7 +24,7 @@ args = {
     "description": "TEST"
 }
 
-logger = IntegratedLogger(record_param, log_root="logs")
+logger = IntegratedLogger(record_param=record_param, log_root="logs", args=args)
 
 # Tensorboard. 
 # For more apis, please see https://github.com/lanpa/tensorboardX
