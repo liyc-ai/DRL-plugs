@@ -31,5 +31,6 @@ setup(
     author_email="ychenli.X@gmail.com",
     url="https://github.com/BepfCp/mllogger",
     packages=find_packages(include=["mlg.*"]),
-    install_requires=requires,
+    python_requires=">=3.7",
+    install_requires=requires
 )

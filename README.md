@@ -16,9 +16,13 @@ pip install -e .
 
 from mlg import IntegratedLogger
 
-record_param = {
+record_param = [
+    "description"
+]  #  Used to name the log dir
+
+args = {
     "description": "TEST"
-}  #  Used to name the log dir
+}
 
 logger = IntegratedLogger(record_param, log_root="logs")
 

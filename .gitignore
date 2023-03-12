@@ -1,5 +1,6 @@
 .vscode/
 logs/
+quickstart.py
 
 
 # Byte-compiled / optimized / DLL files
