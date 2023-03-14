@@ -44,7 +44,6 @@ class IntegratedLogger(_Logger, SummaryWriter):
         self.log_root = log_root
         self.args = args
         self.record_param_dict = self._parse_record_param(record_param)
-        self.t = 0  # time stamp
 
         # Do not change the following orders.
         self._create_print_logger()
@@ -53,9 +52,6 @@ class IntegratedLogger(_Logger, SummaryWriter):
 
         # Init SummaryWriter
         SummaryWriter.__init__(self, logdir=self.exp_dir)
-
-    def set_global_t(self, t: int):
-        self.t = t
 
     def _create_print_logger(self):
         self.exp_dir = join(self.log_root, datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
@@ -93,6 +89,6 @@ class IntegratedLogger(_Logger, SummaryWriter):
                 print(jd, file=f)
 
     #==================== self added helper functions ===================
-    def add_dict(self, info: Dict[str, float]):
+    def add_dict(self, info: Dict[str, float], t: int):
         for key, value in info.items():
-            self.add_scalar(key, value, self.t)
+            self.add_scalar(key, value, t)

@@ -13,7 +13,6 @@ pip install -e .
 ## Quickstart
 
 ```python
-
 from mlg import IntegratedLogger
 
 record_param = [
@@ -32,6 +31,14 @@ logger.add_scalar(
     tag = "train/return",
     scalar_value = 10,
     global_step = 0
+)
+
+logger.add_dict(
+    {
+        "loss": 0.5,
+        "accuracy": 0.8
+    },
+    t = 0
 )
 
 # loguru. 
