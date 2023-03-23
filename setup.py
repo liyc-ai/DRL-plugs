@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 def get_version():
     """Gets the imitation_base version."""
-    path = "mlg/__init__.py"
+    path = "mllogger/__init__.py"
     with open(path) as file:
         lines = file.readlines()
 
@@ -24,7 +24,7 @@ def read_requirements():
 requires = read_requirements()
 
 setup(
-    name="mlg",
+    name="mllogger",
     version=get_version(),
     description="An out-of-box integrated logger.",
     author="Yi-Chen Li",
