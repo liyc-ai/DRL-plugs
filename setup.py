@@ -32,5 +32,5 @@ setup(
     url="https://github.com/BepfCp/mllogger",
     packages=find_packages(include=["mlg.*"]),
     python_requires=">=3.7",
-    install_requires=requires
+    install_requires=requires,
 )

@@ -48,7 +48,7 @@ class IntegratedLogger(_Logger, SummaryWriter):
         # Do not change the following orders.
         self._create_print_logger()
         self._create_ckpt_result_dir()
-        self._dump_args()
+        self._save_args()
 
         # Init SummaryWriter
         SummaryWriter.__init__(self, logdir=self.exp_dir)
@@ -64,8 +64,8 @@ class IntegratedLogger(_Logger, SummaryWriter):
         self.ckpt_dir = join(self.exp_dir, "checkpoint")
         os.makedirs(self.ckpt_dir)  # checkpoint, for model, data, etc.
 
-        self.resutl_dir = join(self.exp_dir, "result")
-        os.makedirs(self.resutl_dir)  # result, for some intermediate result
+        self.result_dir = join(self.exp_dir, "result")
+        os.makedirs(self.result_dir)  # result, for some intermediate result
 
     def _parse_record_param(self, record_param: List[str]) -> Dict[str, Any]:
         if self.args is None or record_param is None:
@@ -80,7 +80,7 @@ class IntegratedLogger(_Logger, SummaryWriter):
                 record_param_dict["-".join(param)] = value
             return record_param_dict
 
-    def _dump_args(self):
+    def _save_args(self):
         if self.args is None:
             return
         else:
@@ -88,7 +88,7 @@ class IntegratedLogger(_Logger, SummaryWriter):
                 jd = json.dumps(self.args, indent=4)
                 print(jd, file=f)
 
-    #==================== self added helper functions ===================
+    # ==================== self added helper functions ===================
     def add_dict(self, info: Dict[str, float], t: int):
         for key, value in info.items():
             self.add_scalar(key, value, t)
