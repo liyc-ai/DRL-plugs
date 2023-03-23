@@ -1,14 +1,12 @@
 import shutil
 
-from mlg import IntegratedLogger
+from mllogger import IntegratedLogger
 
 LOGS = "logs_test"
 import os
 
 
 def test_logger():
-    work_dir = os.getcwd()
-
     record_param = ["description"]  #  Used to name the log dir
 
     args = {"description": "TEST"}

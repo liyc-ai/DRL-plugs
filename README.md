@@ -13,7 +13,7 @@ pip install -e .
 ## Quickstart
 
 ```python
-from mlg import IntegratedLogger
+from mllogger import IntegratedLogger
 
 record_param = [
     "description"
