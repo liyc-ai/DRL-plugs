@@ -1,6 +1,7 @@
 import atexit
 import json
 import os
+import pprint
 import sys
 from datetime import datetime
 from os.path import join
@@ -84,6 +85,8 @@ class IntegratedLogger(_Logger, SummaryWriter):
         if self.args is None:
             return
         else:
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(self.args)
             with open(join(self.exp_dir, "parameter.json"), "w") as f:
                 jd = json.dumps(self.args, indent=4)
                 print(jd, file=f)
