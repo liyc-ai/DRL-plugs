@@ -30,7 +30,7 @@ setup(
     author="Yi-Chen Li",
     author_email="ychenli.X@gmail.com",
     url="https://github.com/BepfCp/mllogger",
-    packages=find_packages(include=["mllogger.*"]),
+    packages=find_packages(include=["mllogger*"]),
     python_requires=">=3.7",
     install_requires=requires,
 )
