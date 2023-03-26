@@ -1,4 +1,4 @@
-# MLG
+# MLLOGGER
 An integrated logger for machine learning experiments.
 
 
