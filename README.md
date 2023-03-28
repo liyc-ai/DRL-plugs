@@ -58,9 +58,9 @@ logs
 │   ├── log.log
 │   ├── parameter.json
 │   └── result
-└── 2023-03-28_22-10-46&description=TEST
+└── 2023-03-28_22-20-07&description=TEST&lr=0.0003
     ├── checkpoint
-    ├── events.out.tfevents.1680012646.DESKTOP-HGHMVKR
+    ├── events.out.tfevents.1680013207.DESKTOP-HGHMVKR
     ├── log.log
     ├── parameter.json
     └── result
