@@ -7,20 +7,34 @@ from datetime import datetime
 from os.path import join
 from typing import Any, Dict, List
 
+import loguru
 from loguru import _defaults
 from loguru._logger import Core as _Core
 from loguru._logger import Logger as _Logger
 from tensorboardX import SummaryWriter
+from wandb.sdk.wandb_run import Run
+
+import wandb
 
 
-class IntegratedLogger(_Logger, SummaryWriter):
+class TBLogger(_Logger, SummaryWriter):
     def __init__(
-        self, record_param: List[str] = None, log_root: str = "logs", args: Dict = None
+        self,
+        args: Dict = None,
+        record_param: List[str] = None,
+        root_log_dir: str = "logs",
+        **kwargs,
     ):
-        """
-        :param record_param: Used for name the experiment results dir
-        :param log_root: The root path for all logs
-        """
+        self.args = args
+        self.record_param = record_param
+        self.root_log_dir = root_log_dir
+        self.record_param_dict = self._parse_record_param(record_param)
+
+        ## Do not change the following orders.
+        self._create_exp_dir()
+        self._create_ckpt_result_dir()
+        self._save_args()
+
         # init loguru, copied from loguru.__init__.py
         _Logger.__init__(
             self,
@@ -32,41 +46,18 @@ class IntegratedLogger(_Logger, SummaryWriter):
             colors=False,
             raw=False,
             capture=True,
-            patcher=None,
+            patchers=[],
             extra={},
         )
 
         if _defaults.LOGURU_AUTOINIT and sys.stderr:
             self.add(sys.stderr)
-
         atexit.register(self.remove)
 
-        # Hyperparam
-        self.log_root = log_root
-        self.args = args
-        self.record_param_dict = self._parse_record_param(record_param)
-
-        # Do not change the following orders.
-        self._create_print_logger()
-        self._create_ckpt_result_dir()
-        self._save_args()
-
-        # Init SummaryWriter
-        SummaryWriter.__init__(self, logdir=self.exp_dir)
-
-    def _create_print_logger(self):
-        self.exp_dir = join(self.log_root, datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
-        if self.record_param_dict is not None:
-            for key, value in self.record_param_dict.items():
-                self.exp_dir = self.exp_dir + f"&{key}={value}"
         self.add(join(self.exp_dir, "log.log"), format="{time} -- {level} -- {message}")
 
-    def _create_ckpt_result_dir(self):
-        self.ckpt_dir = join(self.exp_dir, "checkpoint")
-        os.makedirs(self.ckpt_dir)  # checkpoint, for model, data, etc.
-
-        self.result_dir = join(self.exp_dir, "result")
-        os.makedirs(self.result_dir)  # result, for some intermediate result
+        # init tensorboard writter
+        SummaryWriter.__init__(self, log_dir=self.exp_dir, **kwargs)
 
     def _parse_record_param(self, record_param: List[str]) -> Dict[str, Any]:
         if self.args is None or record_param is None:
@@ -81,6 +72,21 @@ class IntegratedLogger(_Logger, SummaryWriter):
                 record_param_dict["-".join(param)] = value
             return record_param_dict
 
+    def _create_exp_dir(self):
+        self.exp_dir = join(
+            self.root_log_dir, datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
+        )
+        if self.record_param_dict is not None:
+            for key, value in self.record_param_dict.items():
+                self.exp_dir = self.exp_dir + f"~{key}={value}"
+
+    def _create_ckpt_result_dir(self):
+        self.ckpt_dir = join(self.exp_dir, "checkpoint")
+        os.makedirs(self.ckpt_dir)  # checkpoint, for model, data, etc.
+
+        self.result_dir = join(self.exp_dir, "result")
+        os.makedirs(self.result_dir)  # result, for some intermediate result
+
     def _save_args(self):
         if self.args is None:
             return
@@ -91,7 +97,38 @@ class IntegratedLogger(_Logger, SummaryWriter):
                 jd = json.dumps(self.args, indent=4)
                 print(jd, file=f)
 
-    # ==================== self added helper functions ===================
+    # ================ Additional Helper Functions ================
+
     def add_dict(self, info: Dict[str, float], t: int):
         for key, value in info.items():
             self.add_scalar(key, value, t)
+
+
+class WBLogger(Run):
+    def __init__(
+        self,
+        config: Dict = {},
+        project: str = None,
+        entity: str = None,
+        name: str = None,
+        dir: str = None,
+        **kwargs,
+    ):
+        """
+        :param config: dict of hyper-paramters
+        :param project: name of the project
+        :param entity: username or team name
+        :param name: name of this run
+        :param dir: root dir of configs
+        """
+        # init wandb Run, https://docs.wandb.ai/ref/python/init
+        wandb.init(
+            dir=dir, config=config, project=project, entity=entity, name=name, **kwargs
+        )
+        self.exp_dir = wandb.run.dir
+
+        # init loguru logger
+        self.console_logger = loguru.logger
+        self.console_logger.add(
+            join(self.exp_dir, "log.log"), format="{time} -- {level} -- {message}"
+        )

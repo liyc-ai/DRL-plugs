@@ -1,0 +1,4 @@
+loguru==0.7.0
+setuptools==65.5.1
+tensorboardX==2.6
+wandb==0.15.4

@@ -1,6 +1,7 @@
 .vscode/
-logs/
+logs*
 quickstart.py
+wandb/
 
 
 # Byte-compiled / optimized / DLL files
