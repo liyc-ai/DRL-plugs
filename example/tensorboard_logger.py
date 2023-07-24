@@ -1,13 +1,13 @@
 from mllogger import TBLogger
 
+args = {"description": "TEST", "lr": 3e-4}
+
 record_param = [
     "description",
     "lr",
 ]  #  Used to name the log dir
 
-args = {"description": "TEST", "lr": 3e-4}
-
-logger = TBLogger(args=args, record_param=record_param, root_log_dir="logs")
+logger = TBLogger(args=args, root_log_dir="logs", record_param=record_param)
 
 
 """
@@ -17,13 +17,13 @@ logs
 ├── 2023-03-28_22-10-07&description=TEST
 │   ├── checkpoint
 │   ├── events.out.tfevents.1680012607.DESKTOP-HGHMVKR
-│   ├── log.log
+│   ├── console_log.log
 │   ├── parameter.json
 │   └── result
 └── 2023-03-28_22-20-07&description=TEST&lr=0.0003
     ├── checkpoint
     ├── events.out.tfevents.1680013207.DESKTOP-HGHMVKR
-    ├── log.log
+    ├── console_log.log
     ├── parameter.json
     └── result
 """
@@ -36,4 +36,4 @@ logger.add_dict({"loss": 0.5, "accuracy": 0.8}, t=0)
 
 # loguru.
 # For more apis, please see https://github.com/Delgan/loguru
-logger.info("Hello, world!")
+logger.console_logger.info("Hello, world!")

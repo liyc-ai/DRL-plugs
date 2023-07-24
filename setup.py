@@ -13,14 +13,6 @@ def get_version():
     raise RuntimeError("bad version data in __init__.py")
 
 
-def read_requirements():
-    # To generate requirements:
-    # pipreqs . --ignore [ignored dir] --force
-    with open("./requirements.txt", "r", encoding="utf-8") as f:
-        install_requires = f.read().splitlines()
-    return install_requires
-
-
 setup(
     name="mllogger",
     version=get_version(),
@@ -30,5 +22,5 @@ setup(
     url="https://github.com/BepfCp/mllogger",
     packages=find_packages(include=["mllogger*"]),
     python_requires=">=3.7",
-    install_requires=read_requirements(),
+    install_requires=[""],
 )

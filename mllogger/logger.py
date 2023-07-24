@@ -1,30 +1,33 @@
-import atexit
 import json
 import os
 import pprint
-import sys
 from datetime import datetime
-from os.path import join
+from os.path import exists, join
 from typing import Any, Dict, List
 
-import loguru
-from loguru import _defaults
-from loguru._logger import Core as _Core
-from loguru._logger import Logger as _Logger
+import wandb
+from dotenv import load_dotenv
+from loguru import logger
 from tensorboardX import SummaryWriter
 from wandb.sdk.wandb_run import Run
 
-import wandb
 
+class TBLogger(SummaryWriter):
+    """Tensorboard Logger"""
 
-class TBLogger(_Logger, SummaryWriter):
     def __init__(
         self,
-        args: Dict = None,
-        record_param: List[str] = None,
-        root_log_dir: str = "logs",
+        args: Dict[str, Any] = {},
+        root_log_dir: str = "runs",
+        record_param: List[str] = [],
         **kwargs,
     ):
+        """
+        Args:
+            args: Hyper-parameters and configs
+            root_log_dir: The root directory for all the logs
+            record_param: Parameters used to name the log dir
+        """
         self.args = args
         self.record_param = record_param
         self.root_log_dir = root_log_dir
@@ -33,31 +36,14 @@ class TBLogger(_Logger, SummaryWriter):
         ## Do not change the following orders.
         self._create_exp_dir()
         self._create_ckpt_result_dir()
-        self._save_args()
+        self.save_args()
 
-        # init loguru, copied from loguru.__init__.py
-        _Logger.__init__(
-            self,
-            core=_Core(),
-            exception=None,
-            depth=0,
-            record=False,
-            lazy=False,
-            colors=False,
-            raw=False,
-            capture=True,
-            patchers=[],
-            extra={},
+        super().__init__(log_dir=self.exp_dir, **kwargs)
+        self.console_logger = logger
+        self.console_log_file = join(self.exp_dir, "console_log.log")
+        self.console_logger.add(
+            self.console_log_file, format="{time} -- {level} -- {message}"
         )
-
-        if _defaults.LOGURU_AUTOINIT and sys.stderr:
-            self.add(sys.stderr)
-        atexit.register(self.remove)
-
-        self.add(join(self.exp_dir, "log.log"), format="{time} -- {level} -- {message}")
-
-        # init tensorboard writter
-        SummaryWriter.__init__(self, log_dir=self.exp_dir, **kwargs)
 
     def _parse_record_param(self, record_param: List[str]) -> Dict[str, Any]:
         if self.args is None or record_param is None:
@@ -87,7 +73,7 @@ class TBLogger(_Logger, SummaryWriter):
         self.result_dir = join(self.exp_dir, "result")
         os.makedirs(self.result_dir)  # result, for some intermediate result
 
-    def _save_args(self):
+    def save_args(self):
         if self.args is None:
             return
         else:
@@ -107,28 +93,51 @@ class TBLogger(_Logger, SummaryWriter):
 class WBLogger(Run):
     def __init__(
         self,
-        config: Dict = {},
+        args: Dict[str, Any] = {},
+        record_param: List[str] = [],
         project: str = None,
         entity: str = None,
-        name: str = None,
-        dir: str = None,
+        setting_file_path: str = None,
         **kwargs,
     ):
         """
-        :param config: dict of hyper-paramters
-        :param project: name of the project
-        :param entity: username or team name
-        :param name: name of this run
-        :param dir: root dir of configs
+        Args:
+            args: Hyper-parameters and configs
+            record_param: Parameters used to name the log dir
+            project: Name of the project
+            entity: Username or team name
+            setting_file_path: The `.env` file, for environment variables, see https://docs.wandb.ai/guides/track/environment-variables for more details.
         """
+        if setting_file_path is not None and exists(setting_file_path):
+            load_dotenv(setting_file_path)
+        if kwargs.get("dir") and not exists(kwargs.get("dir")):
+            os.makedirs(kwargs["dir"])
         # init wandb Run, https://docs.wandb.ai/ref/python/init
         wandb.init(
-            dir=dir, config=config, project=project, entity=entity, name=name, **kwargs
+            config=args,
+            name=self._parse_record_param(args, record_param),
+            project=project,
+            entity=entity,
+            **kwargs,
         )
         self.exp_dir = wandb.run.dir
 
         # init loguru logger
-        self.console_logger = loguru.logger
+        self.console_logger = logger
+        self.console_log_file = join(self.exp_dir, "console_log.log")
         self.console_logger.add(
-            join(self.exp_dir, "log.log"), format="{time} -- {level} -- {message}"
+            self.console_log_file, format="{time} -- {level} -- {message}"
         )
+
+    def _parse_record_param(self, args: Dict[str, Any], record_param: List[str]) -> str:
+        if args is None or record_param is None:
+            return None
+        else:
+            name = datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
+            for param in record_param:
+                params = param.split(".")
+                value = args
+                for p in params:
+                    value = value[p]
+                name = name + f"~{param}={value}"
+            return name
