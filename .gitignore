@@ -2,6 +2,7 @@
 logs*
 quickstart.py
 wandb/
+requirements.txt
 
 
 # Byte-compiled / optimized / DLL files
