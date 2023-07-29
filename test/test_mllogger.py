@@ -41,4 +41,4 @@ def test_wb_logger():
 
     logger.finish()
 
-    shutil.rmtree(root_log_dir)
+    # shutil.rmtree(root_log_dir)

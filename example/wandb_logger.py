@@ -15,4 +15,4 @@ logger = WBLogger(
 
 logger.log({"accuracy": 0.8, "return": "100."})
 
-logger.console_logger.info("Hello, world!")
+logger.console.info("Hello, world!")

@@ -36,4 +36,4 @@ logger.add_dict({"loss": 0.5, "accuracy": 0.8}, t=0)
 
 # loguru.
 # For more apis, please see https://github.com/Delgan/loguru
-logger.console_logger.info("Hello, world!")
+logger.console.info("Hello, world!")

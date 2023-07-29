@@ -22,11 +22,5 @@ setup(
     url="https://github.com/BepfCp/mllogger",
     packages=find_packages(include=["mllogger*"]),
     python_requires=">=3.7",
-    install_requires=[
-        "loguru",
-        "python-dotenv",
-        "setuptools",
-        "tensorboardX",
-        "wandb"
-    ],
+    install_requires=["loguru", "python-dotenv", "setuptools", "tensorboardX", "wandb"],
 )

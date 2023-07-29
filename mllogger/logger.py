@@ -5,11 +5,38 @@ from datetime import datetime
 from os.path import exists, join
 from typing import Any, Dict, List
 
-import wandb
+import loguru
 from dotenv import load_dotenv
-from loguru import logger
 from tensorboardX import SummaryWriter
 from wandb.sdk.wandb_run import Run
+
+import wandb
+
+
+def _parse_record_param(
+    args: Dict[str, Any], record_param: List[str]
+) -> Dict[str, Any]:
+    if args is None or record_param is None:
+        return None
+    else:
+        record_param_dict = dict()
+        for param in record_param:
+            params = param.split(".")
+            value = args
+            for p in params:
+                value = value[p]
+            record_param_dict[param] = value
+        return record_param_dict
+
+
+def _get_exp_name(record_param_dict: Dict[str, Any], prefix: str = None):
+    if prefix is not None:
+        exp_name = prefix
+    else:
+        exp_name = datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
+    for key, value in record_param_dict.items():
+        exp_name = exp_name + f"~{key}={value}"
+    return exp_name
 
 
 class TBLogger(SummaryWriter):
@@ -31,40 +58,17 @@ class TBLogger(SummaryWriter):
         self.args = args
         self.record_param = record_param
         self.root_log_dir = root_log_dir
-        self.record_param_dict = self._parse_record_param(record_param)
+        self.record_param_dict = _parse_record_param(args, record_param)
 
         ## Do not change the following orders.
-        self._create_exp_dir()
+        self.exp_dir = join(self.root_log_dir, _get_exp_name(self.record_param_dict))
         self._create_ckpt_result_dir()
         self.save_args()
 
         super().__init__(log_dir=self.exp_dir, **kwargs)
-        self.console_logger = logger
-        self.console_log_file = join(self.exp_dir, "console_log.log")
-        self.console_logger.add(
-            self.console_log_file, format="{time} -- {level} -- {message}"
-        )
-
-    def _parse_record_param(self, record_param: List[str]) -> Dict[str, Any]:
-        if self.args is None or record_param is None:
-            return None
-        else:
-            record_param_dict = dict()
-            for param in record_param:
-                param = param.split(".")
-                value = self.args
-                for p in param:
-                    value = value[p]
-                record_param_dict["-".join(param)] = value
-            return record_param_dict
-
-    def _create_exp_dir(self):
-        self.exp_dir = join(
-            self.root_log_dir, datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
-        )
-        if self.record_param_dict is not None:
-            for key, value in self.record_param_dict.items():
-                self.exp_dir = self.exp_dir + f"~{key}={value}"
+        self.console = loguru.logger
+        self.console_log_file = join(self.exp_dir, "console.log")
+        self.console.add(self.console_log_file, format="{time} -- {level} -- {message}")
 
     def _create_ckpt_result_dir(self):
         self.ckpt_dir = join(self.exp_dir, "checkpoint")
@@ -113,9 +117,10 @@ class WBLogger(Run):
         if kwargs.get("dir") and not exists(kwargs.get("dir")):
             os.makedirs(kwargs["dir"])
         # init wandb Run, https://docs.wandb.ai/ref/python/init
+        self.record_param_dict = _parse_record_param(args, record_param)
         wandb.init(
             config=args,
-            name=self._parse_record_param(args, record_param),
+            name=_get_exp_name(self.record_param_dict),
             project=project,
             entity=entity,
             **kwargs,
@@ -123,21 +128,6 @@ class WBLogger(Run):
         self.exp_dir = wandb.run.dir
 
         # init loguru logger
-        self.console_logger = logger
-        self.console_log_file = join(self.exp_dir, "console_log.log")
-        self.console_logger.add(
-            self.console_log_file, format="{time} -- {level} -- {message}"
-        )
-
-    def _parse_record_param(self, args: Dict[str, Any], record_param: List[str]) -> str:
-        if args is None or record_param is None:
-            return None
-        else:
-            name = datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
-            for param in record_param:
-                params = param.split(".")
-                value = args
-                for p in params:
-                    value = value[p]
-                name = name + f"~{param}={value}"
-            return name
+        self.console = loguru.logger
+        self.console_log_file = join(self.exp_dir, "console.log")
+        self.console.add(self.console_log_file, format="{time} -- {level} -- {message}")
