@@ -3,7 +3,7 @@ logs*
 quickstart.py
 wandb/
 requirements.txt
-
+remote.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
