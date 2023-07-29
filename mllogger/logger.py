@@ -1,7 +1,7 @@
 import json
 import os
 import pprint
-import types
+import shutil
 from datetime import datetime
 from os.path import exists, join
 from typing import Any, Dict, List
@@ -43,20 +43,28 @@ class TBLogger:
 
     def __init__(
         self,
+        work_dir: str = "./",
         args: Dict[str, Any] = {},
         root_log_dir: str = "runs",
         record_param: List[str] = [],
+        backup_code: bool = False,
+        code_files_list: List[str] = None,
         **kwargs,
     ):
         """
         Args:
+            work_dir: Path of the current work dir
             args: Hyper-parameters and configs
             root_log_dir: The root directory for all the logs
             record_param: Parameters used to name the log dir
+            backup_code: Whether to backup code
+            code_files_list: The list of code file/dir to backup
         """
         self.args = args
         self.record_param = record_param
-        self.root_log_dir = root_log_dir
+        self.work_dir = os.path.abspath(work_dir)
+        self.root_log_dir = join(work_dir, root_log_dir)
+        self.code_files_list = code_files_list
         self.record_param_dict = _parse_record_param(args, record_param)
 
         ## Do not change the following orders.
@@ -72,12 +80,17 @@ class TBLogger:
         self.console_log_file = join(self.exp_dir, "console.log")
         self.console.add(self.console_log_file, format="{time} -- {level} -- {message}")
 
+        if backup_code: self._backup_code()
+
     def _create_artifact_dir(self):
         self.ckpt_dir = join(self.exp_dir, "ckpt")
         os.makedirs(self.ckpt_dir)  # checkpoint, for model, data, etc.
 
         self.result_dir = join(self.exp_dir, "result")
         os.makedirs(self.result_dir)  # result, for some intermediate result
+
+        self.code_bk_dir = join(self.exp_dir, "code")
+        os.makedirs(self.code_bk_dir)  # back up code
 
     def _save_args(self):
         if self.args is None:
@@ -88,6 +101,17 @@ class TBLogger:
             with open(join(self.exp_dir, "parameter.json"), "w") as f:
                 jd = json.dumps(self.args, indent=4)
                 print(jd, file=f)
+
+    def _backup_code(self):
+        for code in self.code_files_list:
+            src_path = join(self.work_dir, code)
+            tgt_path = join(self.code_bk_dir, code)
+            if os.path.isfile(src_path):
+                shutil.copy(src_path, tgt_path)
+            elif os.path.isdir(src_path):
+                shutil.copytree(src_path, tgt_path)
+            else:
+                raise TypeError("Unknown code file type!")
 
     # ================ Additional Helper Functions ================
 
