@@ -1,16 +1,15 @@
 import json
 import os
 import pprint
+import types
 from datetime import datetime
 from os.path import exists, join
 from typing import Any, Dict, List
 
 import loguru
+import wandb
 from dotenv import load_dotenv
 from tensorboardX import SummaryWriter
-from wandb.sdk.wandb_run import Run
-
-import wandb
 
 
 def _parse_record_param(
@@ -39,7 +38,7 @@ def _get_exp_name(record_param_dict: Dict[str, Any], prefix: str = None):
     return exp_name
 
 
-class TBLogger(SummaryWriter):
+class TBLogger:
     """Tensorboard Logger"""
 
     def __init__(
@@ -62,22 +61,25 @@ class TBLogger(SummaryWriter):
 
         ## Do not change the following orders.
         self.exp_dir = join(self.root_log_dir, _get_exp_name(self.record_param_dict))
-        self._create_ckpt_result_dir()
-        self.save_args()
+        self._create_artifact_dir()
+        self._save_args()
 
-        super().__init__(log_dir=self.exp_dir, **kwargs)
+        # init tb
+        self.tb = SummaryWriter(log_dir=self.exp_dir, **kwargs)
+
+        # init loguru
         self.console = loguru.logger
         self.console_log_file = join(self.exp_dir, "console.log")
         self.console.add(self.console_log_file, format="{time} -- {level} -- {message}")
 
-    def _create_ckpt_result_dir(self):
-        self.ckpt_dir = join(self.exp_dir, "checkpoint")
+    def _create_artifact_dir(self):
+        self.ckpt_dir = join(self.exp_dir, "ckpt")
         os.makedirs(self.ckpt_dir)  # checkpoint, for model, data, etc.
 
         self.result_dir = join(self.exp_dir, "result")
         os.makedirs(self.result_dir)  # result, for some intermediate result
 
-    def save_args(self):
+    def _save_args(self):
         if self.args is None:
             return
         else:
@@ -91,10 +93,10 @@ class TBLogger(SummaryWriter):
 
     def add_dict(self, info: Dict[str, float], t: int):
         for key, value in info.items():
-            self.add_scalar(key, value, t)
+            self.tb.add_scalar(key, value, t)
 
 
-class WBLogger(Run):
+class WBLogger:
     def __init__(
         self,
         args: Dict[str, Any] = {},
@@ -118,13 +120,13 @@ class WBLogger(Run):
             os.makedirs(kwargs["dir"])
         # init wandb Run, https://docs.wandb.ai/ref/python/init
         self.record_param_dict = _parse_record_param(args, record_param)
-        wandb.init(
+        self.wb = wandb.init(
             config=args,
             name=_get_exp_name(self.record_param_dict),
             project=project,
             entity=entity,
             **kwargs,
-        )
+        )  # wandb.sdk.wandb_run.Run
         self.exp_dir = wandb.run.dir
 
         # init loguru logger

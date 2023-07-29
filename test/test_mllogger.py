@@ -23,7 +23,7 @@ def test_tb_logger():
     assert exists(logger.ckpt_dir)
     assert exists(logger.console_log_file)
 
-    logger.close()
+    logger.tb.close()
 
     shutil.rmtree(root_log_dir)
 
@@ -39,6 +39,6 @@ def test_wb_logger():
     )
     assert exists(logger.console_log_file)
 
-    logger.finish()
+    logger.wb.finish()
 
-    # shutil.rmtree(root_log_dir)
+    shutil.rmtree(root_log_dir)

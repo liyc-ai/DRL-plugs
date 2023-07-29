@@ -1,5 +1,5 @@
 from mllogger import console_logger
 
-console_logger.add("log.log")
+console_logger.add("console.log")
 
 console_logger.info("Hello, world!")

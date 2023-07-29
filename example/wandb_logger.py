@@ -13,6 +13,8 @@ logger = WBLogger(
     setting_file_path="./wandb.env",
 )
 
-logger.log({"accuracy": 0.8, "return": "100."})
+logger.wb.log({"accuracy": 0.8, "return": "100."})
+
+logger.wb.log_code(".")
 
 logger.console.info("Hello, world!")
