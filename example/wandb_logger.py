@@ -7,10 +7,7 @@ record_param = [
 ]  #  Used to name the log dir
 
 logger = WBLogger(
-    args=args,
-    record_param=record_param,
-    project="mllogger",
-    setting_file_path="./wandb.env",
+    args=args, record_param=record_param, project="mllogger", mode="offline"
 )
 
 logger.wb.log({"accuracy": 0.8, "return": "100."})

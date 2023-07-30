@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from mllogger import TBLogger
+from mllogger import TBLogger, sync
 
 args = {"description": "TEST", "lr": 3e-4}
 
@@ -56,12 +56,21 @@ logger.tb.close()
 
 # sync code
 load_dotenv("./remote.env")
-TBLogger.sync(
-    hostname = os.environ["HOSTNAME"],
-    port = os.environ["PORT"],
-    username = os.environ["USERNAME"],
-    passwd = os.environ["PASSWD"],
-    remote_work_dir = os.environ["REMOTE_WORK_DIR"],
-    local_work_dir= "./",
-    local_folder_name= "logs"
+"""
+Content of remote.env:
+
+HOSTNAME = "xx.xx.xx.xx"
+PORT = 22
+USERNAME = "xxx"
+PASSWD = "xxxxxxx"
+REMOTE_WORK_DIR = "/path/to/logs"
+"""
+sync(
+    hostname=os.environ["HOSTNAME"],
+    port=os.environ["PORT"],
+    username=os.environ["USERNAME"],
+    passwd=os.environ["PASSWD"],
+    remote_work_dir=os.environ["REMOTE_WORK_DIR"],
+    local_work_dir="./",
+    local_log_dir="logs",
 )

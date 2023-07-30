@@ -34,8 +34,8 @@ def test_wb_logger():
         record_param=record_param,
         project=project,
         entity=entity,
-        setting_file_path="./wandb.env",
         dir=root_log_dir,
+        mode="offline",
     )
     assert exists(logger.console_log_file)
 

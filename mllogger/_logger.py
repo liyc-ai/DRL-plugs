@@ -7,7 +7,6 @@ from os.path import exists, join
 from typing import Any, Dict, List
 
 import loguru
-import paramiko
 import wandb
 from dotenv import load_dotenv
 from tensorboardX import SummaryWriter
@@ -120,48 +119,6 @@ class TBLogger:
     def add_dict(self, info: Dict[str, float], t: int):
         for key, value in info.items():
             self.tb.add_scalar(key, value, t)
-
-    @classmethod
-    def sync(
-        cls,
-        hostname: str,
-        port: int,
-        username: str,
-        passwd: str,
-        remote_work_dir: str,
-        local_work_dir: str = "./",
-        local_folder_name: str = "logs",
-    ):
-        """
-        Args:
-            hostname: IP address of the remote server
-            port: Port of the SSH
-            username: Your username on the remote server
-            passwd: Your corresponding password of the username
-
-        WARNING: KEEP YOUR PASSWD SECRET!!!
-        """
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(hostname, port, username, passwd)
-        sftp = client.open_sftp()
-        
-        def _sync(local_path, remote_path):
-            sftp.mkdir(remote_path)
-
-            for item in os.listdir(local_path):
-                item_local_path = os.path.join(local_path, item)
-                item_remote_path = os.path.join(remote_path, item)
-
-                if os.path.isfile(item_local_path):
-                    sftp.put(item_local_path, item_remote_path)
-                elif os.path.isdir(item_local_path):
-                    _sync(item_local_path, item_remote_path)
-
-        
-        _sync(join(local_work_dir, local_folder_name), join(remote_work_dir, local_folder_name))
-
-        print("Successfully sync code!")
 
 
 class WBLogger:
