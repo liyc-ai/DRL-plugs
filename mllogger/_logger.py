@@ -7,9 +7,10 @@ from os.path import exists, join
 from typing import Any, Dict, List
 
 import loguru
-import wandb
 from dotenv import load_dotenv
 from tensorboardX import SummaryWriter
+
+import wandb
 
 
 def _parse_record_param(
@@ -68,7 +69,8 @@ class TBLogger:
         self.record_param_dict = _parse_record_param(args, record_param)
 
         ## Do not change the following orders.
-        self.exp_dir = join(self.root_log_dir, _get_exp_name(self.record_param_dict))
+        self.exp_name = _get_exp_name(self.record_param_dict)
+        self.exp_dir = join(self.root_log_dir, self.exp_name)
         self._create_artifact_dir()
         self._save_args()
 
@@ -145,9 +147,10 @@ class WBLogger:
             os.makedirs(kwargs["dir"])
         # init wandb Run, https://docs.wandb.ai/ref/python/init
         self.record_param_dict = _parse_record_param(args, record_param)
+        self.exp_name = _get_exp_name(self.record_param_dict)
         self.wb = wandb.init(
             config=args,
-            name=_get_exp_name(self.record_param_dict),
+            name=self.exp_name,
             project=project,
             entity=entity,
             **kwargs,
