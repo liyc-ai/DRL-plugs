@@ -2,11 +2,13 @@ import json
 import os
 import pprint
 import shutil
+import time
 from datetime import datetime
 from os.path import exists, join
 from typing import Any, Dict, List
 
 import loguru
+import tqdm
 from dotenv import load_dotenv
 from tensorboardX import SummaryWriter
 
@@ -67,6 +69,7 @@ class TBLogger:
         self.root_log_dir = join(work_dir, root_log_dir)
         self.code_files_list = code_files_list
         self.record_param_dict = _parse_record_param(args, record_param)
+        self.tqdm = tqdm
 
         ## Do not change the following orders.
         self.exp_name = _get_exp_name(self.record_param_dict)
@@ -156,6 +159,8 @@ class WBLogger:
             **kwargs,
         )  # wandb.sdk.wandb_run.Run
         self.exp_dir = wandb.run.dir
+
+        self.tqdm = tqdm
 
         # init loguru logger
         self.console = loguru.logger
