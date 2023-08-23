@@ -133,7 +133,7 @@ class TBLogger:
         Note: Currently, only th.Tensor and th.nn.Module are supported.
         """
         if path is None:
-            path = self.ckpt_dir
+            path = join(self.ckpt_dir, "models.pt")
         state_dicts = {}
         for name, model in models.items():
             if isinstance(model, th.Tensor):
@@ -149,7 +149,7 @@ class TBLogger:
     ):
         """Load model from pre-specified path"""
         if path is None:
-            path = self.ckpt_dir
+            path = join(self.ckpt_dir, "models.pt")
         state_dicts = th.load(path)
         for name, model in models.items():
             if isinstance(model, th.Tensor):
