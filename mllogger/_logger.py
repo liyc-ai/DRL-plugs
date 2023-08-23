@@ -2,12 +2,13 @@ import json
 import os
 import pprint
 import shutil
-import time
 from datetime import datetime
 from os.path import exists, join
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 import loguru
+import torch as th
+import torch.nn as nn
 import tqdm
 from dotenv import load_dotenv
 from tensorboardX import SummaryWriter
@@ -124,6 +125,31 @@ class TBLogger:
     def add_dict(self, info: Dict[str, float], t: int):
         for key, value in info.items():
             self.tb.add_scalar(key, value, t)
+
+    def save_model(self, models: Dict[str, Union[nn.Module, th.Tensor]], path: str):
+        """Save model to pre-specified path
+        Note: Currently, only th.Tensor and th.nn.Module are supported.
+        """
+        state_dicts = {}
+        for name, model in models.items():
+            if isinstance(model, th.Tensor):
+                state_dicts[name] = {name: model}
+            else:
+                state_dicts[name] = model.state_dict()
+        th.save(state_dicts, path)
+
+        self.console.info(f"Successfully save model to {path}!")
+
+    def load_model(self, models: Dict[str, Union[nn.Module, th.Tensor]], path: str):
+        """Load model from pre-specified path
+        """
+        state_dicts = th.load(path)
+        for name, model in models.items():
+            if isinstance(model, th.Tensor):
+                models[name].copy_(state_dicts[name][name])
+            else:
+                model.load_state_dict(state_dicts[name])
+        self.console.info(f"Successfully load model from {path}!")
 
 
 class WBLogger:
