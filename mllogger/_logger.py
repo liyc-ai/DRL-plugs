@@ -126,10 +126,14 @@ class TBLogger:
         for key, value in info.items():
             self.tb.add_scalar(key, value, t)
 
-    def save_model(self, models: Dict[str, Union[nn.Module, th.Tensor]], path: str):
+    def save_model(
+        self, models: Dict[str, Union[nn.Module, th.Tensor]], path: str = None
+    ):
         """Save model to pre-specified path
         Note: Currently, only th.Tensor and th.nn.Module are supported.
         """
+        if path is None:
+            path = self.ckpt_dir
         state_dicts = {}
         for name, model in models.items():
             if isinstance(model, th.Tensor):
@@ -140,9 +144,12 @@ class TBLogger:
 
         self.console.info(f"Successfully save model to {path}!")
 
-    def load_model(self, models: Dict[str, Union[nn.Module, th.Tensor]], path: str):
-        """Load model from pre-specified path
-        """
+    def load_model(
+        self, models: Dict[str, Union[nn.Module, th.Tensor]], path: str = None
+    ):
+        """Load model from pre-specified path"""
+        if path is None:
+            path = self.ckpt_dir
         state_dicts = th.load(path)
         for name, model in models.items():
             if isinstance(model, th.Tensor):
