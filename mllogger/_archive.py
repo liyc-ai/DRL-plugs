@@ -20,7 +20,7 @@ def save_model(
     models: Dict[str, Union[nn.Module, th.Tensor]],
     ckpt_dir: str,
     model_name: str = "models.pt",
-):
+) -> str:
     """Save model to pre-specified path
     Note: Currently, only th.Tensor and th.nn.Module are supported.
     """
@@ -32,6 +32,7 @@ def save_model(
         else:
             state_dicts[name] = model.state_dict()
     th.save(state_dicts, model_path)
+    return model_path
 
 
 def load_model(models: Dict[str, Union[nn.Module, th.Tensor]], model_path: str):
