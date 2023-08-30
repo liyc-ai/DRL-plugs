@@ -1,7 +1,6 @@
 import json
 import os
 import pprint
-import shutil
 from datetime import datetime
 from os.path import exists, join
 from typing import Any, Dict, List, Union
@@ -10,10 +9,11 @@ import loguru
 import torch as th
 import torch.nn as nn
 import tqdm
+import wandb
 from dotenv import load_dotenv
 from tensorboardX import SummaryWriter
 
-import wandb
+from mllogger.helper import copys
 
 
 def _parse_record_param(
@@ -113,18 +113,15 @@ class TBLogger:
         for code in self.code_files_list:
             src_path = join(self.work_dir, code)
             tgt_path = join(self.code_bk_dir, code)
-            if os.path.isfile(src_path):
-                shutil.copy(src_path, tgt_path)
-            elif os.path.isdir(src_path):
-                shutil.copytree(src_path, tgt_path)
-            else:
-                raise TypeError("Unknown code file type!")
+            copys(src_path, tgt_path)
 
     # ================ Additional Helper Functions ================
 
     def add_dict(self, info: Dict[str, float], t: int):
         for key, value in info.items():
             self.tb.add_scalar(key, value, t)
+
+    # ================ Additional Helper Functions ================
 
     def save_model(
         self, models: Dict[str, Union[nn.Module, th.Tensor]], path: str = None
@@ -158,6 +155,22 @@ class TBLogger:
                 model.load_state_dict(state_dicts[name])
         self.console.info(f"Successfully load model from {path}!")
 
+    def archive(self, src_dir: str = None, tgt_dir: str = "archived"):
+        """Archive logs in src_dir (relative to root_log_dir) to tgt_dir (relative to work_dir)
+        """
+        if src_dir is None:
+            src_dir = self.exp_dir
+            exp_name = self.exp_name
+        else:
+            if not os.path.isabs(src_dir):
+                src_dir = join(self.root_log_dir, src_dir)
+            exp_name = os.path.split(src_dir)[-1]
+        if not os.path.isabs(tgt_dir):
+            tgt_dir = join(self.work_dir, tgt_dir)
+        os.makedirs(tgt_dir)
+        assert os.path.exists(src_dir)
+        copys(src_dir, join(tgt_dir, exp_name))
+        
 
 class WBLogger:
     def __init__(

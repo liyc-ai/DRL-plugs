@@ -54,23 +54,25 @@ logger.console.info("Hello, world!")
 
 logger.tb.close()
 
-# sync code
-load_dotenv("./remote.env")
-"""
-Content of remote.env:
+logger.archive(tgt_dir="archive")
 
-HOSTNAME = "xx.xx.xx.xx"
-PORT = 22
-USERNAME = "xxx"
-PASSWD = "xxxxxxx"
-REMOTE_WORK_DIR = "/path/to/logs"
-"""
-sync(
-    hostname=os.environ["HOSTNAME"],
-    port=os.environ["PORT"],
-    username=os.environ["USERNAME"],
-    passwd=os.environ["PASSWD"],
-    remote_work_dir=os.environ["REMOTE_WORK_DIR"],
-    local_work_dir="./",
-    local_log_dir="logs",
-)
+# # sync code
+# load_dotenv("./remote.env")
+# """
+# Content of remote.env:
+
+# HOSTNAME = "xx.xx.xx.xx"
+# PORT = 22
+# USERNAME = "xxx"
+# PASSWD = "xxxxxxx"
+# REMOTE_WORK_DIR = "/path/to/logs"
+# """
+# sync(
+#     hostname=os.environ["HOSTNAME"],
+#     port=os.environ["PORT"],
+#     username=os.environ["USERNAME"],
+#     passwd=os.environ["PASSWD"],
+#     remote_work_dir=os.environ["REMOTE_WORK_DIR"],
+#     local_work_dir="./",
+#     local_log_dir="logs",
+# )
