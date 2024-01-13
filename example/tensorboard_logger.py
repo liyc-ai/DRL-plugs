@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from mllogger import TBLogger, archive, sync
+from mllogger import TBLogger, archive_logs, sync
 
 args = {"description": "TEST", "lr": 3e-4}
 
@@ -54,7 +54,7 @@ logger.console.info("Hello, world!")
 
 logger.tb.close()
 
-archive(src_log_dir="logs", exp_name=logger.exp_name, tgt_dir="archive")
+archive_logs(src_log_dir="logs", exp_name=logger.exp_name, tgt_dir="archive")
 
 # # sync code
 # load_dotenv("./remote.env")
