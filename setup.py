@@ -29,5 +29,6 @@ setup(
         "tensorboardX",
         "wandb",
         "paramiko",
+        "tqdm",
     ],
 )
