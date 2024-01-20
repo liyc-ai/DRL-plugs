@@ -2,8 +2,8 @@ from setuptools import find_packages, setup
 
 
 def get_version():
-    """Gets the imitation_base version."""
-    path = "mllogger/__init__.py"
+    """Gets the rlplugs version."""
+    path = "rlplugs/__init__.py"
     with open(path) as file:
         lines = file.readlines()
 
@@ -14,13 +14,13 @@ def get_version():
 
 
 setup(
-    name="mllogger",
+    name="rlplugs",
     version=get_version(),
-    description="An out-of-box integrated logger.",
+    description="An out-of-box toolbox that integrates helpers for RL.",
     author="Yi-Chen Li",
     author_email="ychenli.X@gmail.com",
-    url="https://github.com/BepfCp/mllogger",
-    packages=find_packages(include=["mllogger*"]),
+    url="https://github.com/BepfCp/rlplugs",
+    packages=find_packages(include=["rlplugs*"]),
     python_requires=">=3.7",
     install_requires=[
         "loguru",

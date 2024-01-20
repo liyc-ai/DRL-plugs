@@ -1,7 +1,7 @@
 import os
 from os.path import join
 
-from mllogger.helper import copys
+from rlplugs.ospy.file import copys
 
 
 def archive_logs(src_log_dir: str, exp_name: str, tgt_dir: str = "archived"):

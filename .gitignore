@@ -1,10 +1,7 @@
-.vscode/
-logs*
-quickstart.py
+# Self Added
+logs/
+archive/
 wandb/
-requirements.txt
-remote.env
-archive*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

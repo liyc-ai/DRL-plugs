@@ -1,4 +1,4 @@
-from mllogger import console_logger
+from rlplugs.logger import console_logger
 
 console_logger.add("console.log")
 

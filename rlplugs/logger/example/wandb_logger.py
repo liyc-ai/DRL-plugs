@@ -1,4 +1,4 @@
-from mllogger import WBLogger
+from rlplugs.logger import WBLogger
 
 args = {"description": "TEST", "lr": 3e-4}
 record_param = [

@@ -1,5 +1,3 @@
-__version__ = "1.2.0"
-
 from loguru import logger as console_logger
 from typing import Union
 

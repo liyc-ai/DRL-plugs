@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from mllogger import TBLogger, archive_logs, sync
+from rlplugs.logger import TBLogger, archive_logs, sync
 
 args = {"description": "TEST", "lr": 3e-4}
 
@@ -17,7 +17,7 @@ logger = TBLogger(
     root_log_dir="logs",
     record_param=record_param,
     backup_code=True,
-    code_files_list=["mllogger", "setup.py"],
+    code_files_list=["rlplugs", "setup.py"],
 )
 
 
