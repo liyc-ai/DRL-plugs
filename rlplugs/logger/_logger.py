@@ -7,10 +7,10 @@ from typing import Any, Dict, List, Union
 
 import loguru
 import tqdm
-import wandb
 from dotenv import load_dotenv
 from tensorboardX import SummaryWriter
 
+import wandb
 from rlplugs.ospy.file import copys
 
 try:
@@ -44,35 +44,6 @@ def _get_exp_name(record_param_dict: Dict[str, Any], prefix: str = None):
     for key, value in record_param_dict.items():
         exp_name = exp_name + f"~{key}={value}"
     return exp_name
-
-
-def _save_torch_model(
-    models: Dict[str, Union[nn.Module, th.Tensor]],
-    ckpt_dir: str,
-    model_name: str = "models.pt",
-) -> str:
-    """Save [Pytorch] model to a pre-specified path
-    Note: Currently, only th.Tensor and th.nn.Module are supported.
-    """
-    model_path = join(ckpt_dir, model_name)
-    state_dicts = {}
-    for name, model in models.items():
-        if isinstance(model, th.Tensor):
-            state_dicts[name] = {name: model}
-        else:
-            state_dicts[name] = model.state_dict()
-    th.save(state_dicts, model_path)
-    return model_path
-
-
-def _load_torch_model(models: Dict[str, Union[nn.Module, th.Tensor]], model_path: str):
-    """Load [Pytorch] model from a pre-specified path"""
-    state_dicts = th.load(model_path)
-    for name, model in models.items():
-        if isinstance(model, th.Tensor):
-            models[name].copy_(state_dicts[name][name])
-        else:
-            model.load_state_dict(state_dicts[name])
 
 
 class TBLogger:
@@ -155,30 +126,6 @@ class TBLogger:
         for key, value in info.items():
             self.tb.add_scalar(key, value, t)
 
-    @classmethod
-    def save_torch_model(
-        self,
-        models: Dict[str, Union[nn.Module, th.Tensor]],
-        ckpt_dir: str,
-        model_name: str = "models.pt",
-    ):
-        self.console.info(
-            f"Successfully save model to {_save_torch_model(models, ckpt_dir, model_name)}!"
-        )
-
-    @classmethod
-    def load_torch_model(
-        self, models: Dict[str, Union[nn.Module, th.Tensor]], model_path: str
-    ):
-        if not exists(model_path):
-            self.console.warning(
-                "No model to load, the model parameters are randomly initialized."
-            )
-            return
-        self.console.info(
-            f"Successfully load model from {_load_torch_model(models, model_path)}!"
-        )
-
 
 class WBLogger:
     """Wandb Logger"""
@@ -223,27 +170,3 @@ class WBLogger:
         # init loguru logger
         self.console_log_file = join(self.exp_dir, "console.log")
         self.console.add(self.console_log_file, format="{time} -- {level} -- {message}")
-
-    @classmethod
-    def save_torch_model(
-        self,
-        models: Dict[str, Union[nn.Module, th.Tensor]],
-        ckpt_dir: str,
-        model_name: str = "models.pt",
-    ):
-        self.console.info(
-            f"Successfully save model to {_save_torch_model(models, ckpt_dir, model_name)}!"
-        )
-
-    @classmethod
-    def load_torch_model(
-        self, models: Dict[str, Union[nn.Module, th.Tensor]], model_path: str
-    ):
-        if not exists(model_path):
-            self.console.warning(
-                "No model to load, the model parameters are randomly initialized."
-            )
-            return
-        self.console.info(
-            f"Successfully load model from {_load_torch_model(models, model_path)}!"
-        )
