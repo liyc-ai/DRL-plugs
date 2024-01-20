@@ -20,7 +20,7 @@ setup(
     author="Yi-Chen Li",
     author_email="ychenli.X@gmail.com",
     url="https://github.com/BepfCp/rlplugs",
-    packages=find_packages(include=["rlplugs*"]),
+    packages=find_packages(include=["rlplugs"]),
     python_requires=">=3.7",
     install_requires=[
         "loguru",
