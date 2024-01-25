@@ -3,7 +3,7 @@ import os
 import pprint
 from datetime import datetime
 from os.path import exists, join
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 
 import loguru
 import tqdm
@@ -12,12 +12,6 @@ from tensorboardX import SummaryWriter
 
 import wandb
 from rlplugs.ospy.file import copys
-
-try:
-    import torch as th
-    import torch.nn as nn
-except:
-    pass
 
 
 def _parse_record_param(

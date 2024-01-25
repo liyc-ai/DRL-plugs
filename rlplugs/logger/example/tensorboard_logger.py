@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from rlplugs.logger import TBLogger, archive_logs, sync
+from rlplugs.logger import TBLogger, archive_logs, upload_logs
 
 args = {"description": "TEST", "lr": 3e-4}
 
@@ -54,25 +54,21 @@ logger.console.info("Hello, world!")
 
 logger.tb.close()
 
-archive_logs(src_log_dir="logs", exp_name=logger.exp_name, tgt_dir="archive")
+archive_logs(exp_name=logger.exp_name, src_dir="logs", tgt_dir="archive")
 
-# # sync code
-# load_dotenv("./remote.env")
-# """
-# Content of remote.env:
+# sync code
+load_dotenv("./remote.env")
+"""
+Content of remote.env:
 
-# HOSTNAME = "xx.xx.xx.xx"
-# PORT = 22
-# USERNAME = "xxx"
-# PASSWD = "xxxxxxx"
-# REMOTE_WORK_DIR = "/path/to/logs"
-# """
-# sync(
-#     hostname=os.environ["HOSTNAME"],
-#     port=os.environ["PORT"],
-#     username=os.environ["USERNAME"],
-#     passwd=os.environ["PASSWD"],
-#     remote_work_dir=os.environ["REMOTE_WORK_DIR"],
-#     local_work_dir="./",
-#     local_log_dir="logs",
-# )
+HOSTNAME = "xx.xx.xx.xx"
+PORT = 22
+REMOTE_WORK_DIR = "/path/to/logs"
+"""
+upload_logs(
+    hostname=os.environ["HOSTNAME"],
+    port=os.environ["PORT"],
+    local_log_name="logs",
+    local_src_dir="./",
+    remote_tgt_dir=os.environ["REMOTE_WORK_DIR"],
+)

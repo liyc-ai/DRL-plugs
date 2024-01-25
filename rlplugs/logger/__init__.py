@@ -1,10 +1,19 @@
-from loguru import logger as console_logger
 from typing import Union
 
-from ._archive import archive_logs
-from ._logger import TBLogger, WBLogger
-from ._sync import sync
+from loguru import logger as console_logger
+
+from rlplugs.logger._archive import archive_logs
+from rlplugs.logger._logger import TBLogger, WBLogger
+from rlplugs.logger._sync import download_logs, upload_logs
 
 LoggerType = Union[TBLogger, WBLogger]
 
-__all__ = ["LoggerType", "TBLogger", "WBLogger", "console_logger", "sync", "archive_logs"]
+__all__ = [
+    "LoggerType",
+    "console_logger",
+    "archive_logs",
+    "TBLogger",
+    "WBLogger",
+    "download_logs",
+    "upload_logs",
+]
