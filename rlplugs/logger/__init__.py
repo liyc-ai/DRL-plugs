@@ -9,11 +9,11 @@ from rlplugs.logger._sync import download_logs, upload_logs
 LoggerType = Union[TBLogger, WBLogger]
 
 __all__ = [
-    "LoggerType",
-    "console_logger",
-    "archive_logs",
-    "TBLogger",
-    "WBLogger",
-    "download_logs",
-    "upload_logs",
+    LoggerType,
+    console_logger,
+    archive_logs,
+    TBLogger,
+    WBLogger,
+    download_logs,
+    upload_logs,
 ]

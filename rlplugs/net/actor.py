@@ -5,10 +5,7 @@ import torch as th
 from torch.distributions.normal import Normal
 from torch.nn import Module, ReLU
 
-from rlplugs.net.ptu import mlp, orthogonal_init_, tensor2ndarray, variable
-
-LOG_STD_MIN = -20
-LOG_STD_MAX = 2
+from rlplugs.net.ptu import mlp, orthogonal_init, tensor2ndarray, variable
 
 
 class MLPGaussianActor(Module):
@@ -23,12 +20,16 @@ class MLPGaussianActor(Module):
         net_arch: List[int],
         state_std_independent: bool = False,
         activation_fn: Module = ReLU,
-        **kwarg
+        log_std_max: float = 2,
+        log_std_min: float = -20,
+        **kwarg,
     ):
         """
         :param state_std_independent: whether std is a function of state
         """
         super().__init__()
+        self.log_std_max = log_std_max
+        self.log_std_min = log_std_min
 
         # network definition
         self.feature_extractor, feature_shape = mlp(
@@ -45,12 +46,12 @@ class MLPGaussianActor(Module):
                 feature_shape, action_shape, [], activation_fn, **kwarg
             )
 
-        self.apply(orthogonal_init_)
+        self.apply(orthogonal_init)
 
     def forward(self, state: th.Tensor):
         feature = self.feature_extractor(state)
         mu, log_std = self.mu(feature), self.log_std(feature)
-        log_std = th.clamp(log_std, LOG_STD_MIN, LOG_STD_MAX)
+        log_std = th.clamp(log_std, self.log_std_min, self.log_std_max)
         return mu, log_std.exp()
 
     def sample(
@@ -89,7 +90,7 @@ class MLPDeterministicActor(Module):
         action_shape: Tuple[int,],
         net_arch: List[int],
         activation_fn: Module = ReLU,
-        **kwarg
+        **kwarg,
     ):
         super().__init__()
 
@@ -100,7 +101,7 @@ class MLPDeterministicActor(Module):
             feature_shape, action_shape, [], activation_fn, **kwarg
         )
 
-        self.apply(orthogonal_init_)
+        self.apply(orthogonal_init)
 
     def forward(self, state: th.Tensor):
         feature = self.feature_extractor(state)

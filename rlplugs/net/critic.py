@@ -3,7 +3,7 @@ from typing import List, Tuple
 import torch as th
 from torch.nn import Module, ReLU
 
-from rlplugs.net.ptu import mlp, orthogonal_init_
+from rlplugs.net.ptu import mlp, orthogonal_init
 
 
 class MLPCritic(Module):
@@ -22,7 +22,7 @@ class MLPCritic(Module):
         self.value_net, _ = mlp(
             input_shape, output_shape, net_arch, activation_fn, **kwarg
         )
-        self.apply(orthogonal_init_)
+        self.apply(orthogonal_init)
 
     def forward(self, *input_):
         input_ = th.cat(input_, dim=-1)
@@ -43,7 +43,7 @@ class MLPTwinCritic(Module):
         self.Q_1, _ = mlp(input_shape, output_shape, net_arch, activation_fn, **kwarg)
         self.Q_2, _ = mlp(input_shape, output_shape, net_arch, activation_fn, **kwarg)
 
-        self.apply(orthogonal_init_)
+        self.apply(orthogonal_init)
 
     def forward(self, twin_value: bool, *input_):
         """
@@ -77,7 +77,7 @@ class MLPDuleQNet(Module):
         )
         self.mix_type = mix_type
 
-        self.apply(orthogonal_init_)
+        self.apply(orthogonal_init)
 
     def forward(self, state: th.Tensor):
         feature = self.feature_extrator(state)

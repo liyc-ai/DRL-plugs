@@ -86,7 +86,7 @@ def load_torch_model(models: Dict[str, Union[nn.Module, th.Tensor]], model_path:
 # ------------------ Initialization ----------------------------
 
 
-def orthogonal_init_(m):
+def orthogonal_init(m):
     """Custom weight init for Conv2D and Linear layers."""
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
         nn.init.orthogonal_(m.weight.data)
