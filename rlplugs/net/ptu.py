@@ -70,17 +70,20 @@ def save_torch_model(
         else:
             state_dicts[name] = model.state_dict()
     th.save(state_dicts, model_path)
-    return model_path
+    return f"Successfully save model to {model_path}!"
 
 
-def load_torch_model(models: Dict[str, Union[nn.Module, th.Tensor]], model_path: str):
+def load_torch_model(
+    models: Dict[str, Union[nn.Module, th.Tensor]], model_path: str
+) -> str:
     """Load [Pytorch] model from a pre-specified path"""
     state_dicts = th.load(model_path)
     for name, model in models.items():
         if isinstance(model, th.Tensor):
-            models[name].copy_(state_dicts[name][name])
+            models[name].data = state_dicts[name][name].data
         else:
             model.load_state_dict(state_dicts[name])
+    return f"Successfully load model from {model_path}!"
 
 
 # ------------------ Initialization ----------------------------
