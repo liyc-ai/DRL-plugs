@@ -6,7 +6,7 @@ from rlplugs.ospy.dataset import (
     save_dataset_to_h5,
     split_dataset_into_trajs,
 )
-from rlplugs.ospy.file import copys
+from rlplugs.ospy.file import copys, filter_from_list
 
 __all__ = [
     get_dataset,
@@ -16,4 +16,5 @@ __all__ = [
     save_dataset_to_h5,
     split_dataset_into_trajs,
     copys,
+    filter_from_list,
 ]

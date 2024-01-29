@@ -31,5 +31,9 @@ setup(
         "paramiko",
         "tqdm",
         "tensorboard",
+        "pandas",
+        "seaborn",
+        "matplotlib",
+        "numpy",
     ],
 )

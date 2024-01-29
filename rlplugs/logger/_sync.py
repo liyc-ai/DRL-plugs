@@ -173,3 +173,21 @@ def download_logs(
             local_tgt_dir,
         )
     print(f"Successfully finish downloading {remote_log_path}!")
+
+
+# # Example: Upload Logs
+# load_dotenv("./remote.env")
+# """
+# Content of remote.env:
+
+# HOSTNAME = "xx.xx.xx.xx"
+# PORT = 22
+# REMOTE_WORK_DIR = "/path/to/logs"
+# """
+# upload(
+#     hostname=os.environ["HOSTNAME"],
+#     port=os.environ["PORT"],
+#     local_log_name="logs",
+#     local_src_dir="./",
+#     remote_tgt_dir=os.environ["REMOTE_WORK_DIR"],
+# )
