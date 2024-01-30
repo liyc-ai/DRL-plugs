@@ -178,7 +178,7 @@ class TransitionBuffer(BaseBuffer):
             dataset["next_observations"],
             dataset["rewards"],
             dataset["terminals"],
-        )  # we currently not consider the log_pis. But you can insert it with small modifications
+        )  # we currently not consider the log_pi. But you can insert it with small modifications
         self.insert_batch(observations, actions, next_observations, rewards, terminals)
 
     def save_buffer(self, save_dir: str, file_name: str = None):

@@ -86,6 +86,20 @@ def load_torch_model(
     return f"Successfully load model from {model_path}!"
 
 
+def set_train_mode(models: Dict[str, Union[nn.Module, th.Tensor]]):
+    """Set mode of the models to train"""
+    for model in models:
+        if isinstance(model, nn.Module):
+            models[model].train()
+
+
+def set_eval_mode(models: Dict[str, Union[nn.Module, th.Tensor]]):
+    """Set mode of the models to eval"""
+    for model in models:
+        if isinstance(model, nn.Module):
+            models[model].eval()
+
+
 # ------------------ Initialization ----------------------------
 
 

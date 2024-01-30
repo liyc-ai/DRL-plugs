@@ -1,6 +1,5 @@
 import os
 import os.path as osp
-from typing import List
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -57,6 +56,7 @@ for key in KEYs:  # smooth
 ## 2. Drawing multiple lines in a single picture
 for key in KEYs:
     sbn.lineplot(data=pd.DataFrame(merged_datas[key]), x="steps", y="values", label=key)
+
 plt.title(f"Learning Curves of {algo} on {env_id}")
 plt.xlabel("Steps", size=14)
 plt.ylabel("Return", size=14)

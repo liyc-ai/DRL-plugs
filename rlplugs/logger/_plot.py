@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import Dict, List
 
 import numpy as np
 from tensorboard.backend.event_processing import event_accumulator
@@ -51,28 +51,3 @@ def tb2dict(tb_file_path: str, keys: List[str]) -> Dict[str, Dict[str, List[floa
             values.append(item.value)
         statistics[key] = {"steps": steps, "values": values}
     return statistics
-
-
-# def plot(
-#     work_dir: str,
-#     log_dirs: List[str],
-#     keys: List[str],
-#     rule: str = "events.out.tfevents*",
-# ):
-#     datas = {key: list() for key in keys}
-#     for log_dir in log_dirs:
-#         dir_path = join(work_dir, log_dir)
-#         matched_file = match_file(os.listdir(dir_path), rule)[0]
-#         data = tb2pd(join(dir_path, matched_file), keys)
-#         for key in keys:
-#             datas[key].append(data[key])
-
-
-# d = tb2pd(
-#     "/media/liyc/Data/workspace/RL-pytorch/runs/2024-01-27__18-19-31~seed=3407~agent.algo=ppo~env.id=Hopper-v4/events.out.tfevents.1706350771.liyc-G5-5500",
-#     ["return/eval", "return/train"],
-# )
-
-# y = average_smooth(d["return/eval"]["values"])
-
-# print(y)
