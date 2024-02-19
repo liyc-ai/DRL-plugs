@@ -61,7 +61,7 @@ def split_dataset_into_trajs(
     else:
         if max_episode_steps is None:
             raise Exception(
-                "You have the specify the max_episode_steps if no timeouts in dataset"
+                "You have to specify the max_episode_steps if no timeouts in dataset"
             )
         else:
             traj_pairs = []

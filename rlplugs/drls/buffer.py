@@ -128,7 +128,7 @@ class TransitionBuffer(BaseBuffer):
         action: Union[np.ndarray, int],
         next_state: np.ndarray,
         reward: float,
-        done: bool,
+        done: float,
     ):
         # state
         state, next_state = (np.array(_, dtype=np.float32) for _ in [state, next_state])
