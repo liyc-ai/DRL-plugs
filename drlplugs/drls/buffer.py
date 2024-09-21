@@ -7,7 +7,7 @@ import numpy as np
 import torch as th
 
 # from stable_baselines3.common.buffers import ReplayBuffer
-from rlplugs.ospy.dataset import (
+from drlplugs.ospy.dataset import (
     get_one_traj,
     save_dataset_to_h5,
     split_dataset_into_trajs,

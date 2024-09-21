@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from tensorboardX import SummaryWriter
 
 import wandb
-from rlplugs.ospy.file import copys
+from drlplugs.ospy.file import copys
 
 
 def _parse_record_param(

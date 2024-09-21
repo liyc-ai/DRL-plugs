@@ -3,7 +3,7 @@ from typing import List, Tuple
 import torch as th
 from torch.nn import Module, ReLU
 
-from rlplugs.net.ptu import mlp, orthogonal_init
+from drlplugs.net.ptu import mlp, orthogonal_init
 
 
 class MLPCritic(Module):

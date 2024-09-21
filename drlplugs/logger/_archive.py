@@ -1,7 +1,7 @@
 import os
 from os.path import join
 
-from rlplugs.ospy.file import copys
+from drlplugs.ospy.file import copys
 
 
 def archive_logs(exp_name: str, src_dir: str, tgt_dir: str = "archived"):

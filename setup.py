@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 def get_version():
     """Gets the rlplugs version."""
-    path = "rlplugs/__init__.py"
+    path = "drlplugs/__init__.py"
     with open(path) as file:
         lines = file.readlines()
 
@@ -14,13 +14,13 @@ def get_version():
 
 
 setup(
-    name="rlplugs",
+    name="drlplugs",
     version=get_version(),
     description="An out-of-box toolbox that integrates helpers for RL.",
     author="Yi-Chen Li",
     author_email="ychenli.X@gmail.com",
-    url="https://github.com/BepfCp/rlplugs",
-    packages=find_packages(include=["rlplugs*"]),
+    url="https://github.com/BepfCp/DRL-plugs",
+    packages=find_packages(include=["drlplugs*"]),
     python_requires=">=3.7",
     install_requires=[
         "loguru",

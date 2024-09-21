@@ -2,10 +2,10 @@ from typing import Union
 
 from loguru import logger as console_logger
 
-from rlplugs.logger._archive import archive_logs
-from rlplugs.logger._logger import TBLogger, WBLogger
-from rlplugs.logger._plot import average_smooth, tb2dict, window_smooth
-from rlplugs.logger._sync import download_logs, upload_logs
+from drlplugs.logger._archive import archive_logs
+from drlplugs.logger._logger import TBLogger, WBLogger
+from drlplugs.logger._plot import average_smooth, tb2dict, window_smooth
+from drlplugs.logger._sync import download_logs, upload_logs
 
 LoggerType = Union[TBLogger, WBLogger]
 

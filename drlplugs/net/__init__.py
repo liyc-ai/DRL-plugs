@@ -1,6 +1,6 @@
-from rlplugs.net.actor import MLPDeterministicActor, MLPGaussianActor
-from rlplugs.net.critic import MLPCritic, MLPDuleQNet, MLPTwinCritic
-from rlplugs.net.ptu import (
+from drlplugs.net.actor import MLPDeterministicActor, MLPGaussianActor
+from drlplugs.net.critic import MLPCritic, MLPDuleQNet, MLPTwinCritic
+from drlplugs.net.ptu import (
     clean_cuda,
     cnn,
     freeze_net,

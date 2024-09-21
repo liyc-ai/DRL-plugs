@@ -1,4 +1,4 @@
-from rlplugs.logger import console_logger
+from drlplugs.logger import console_logger
 
 console_logger.add("console.log")
 
