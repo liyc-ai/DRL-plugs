@@ -19,7 +19,7 @@ setup(
     description="An out-of-box toolbox that integrates helpers for RL.",
     author="Yi-Chen Li",
     author_email="ychenli.X@gmail.com",
-    url="https://github.com/BepfCp/DRL-plugs",
+    url="https://github.com/liyc-ai/DRL-plugs",
     packages=find_packages(include=["drlplugs*"]),
     python_requires=">=3.7",
     install_requires=[
