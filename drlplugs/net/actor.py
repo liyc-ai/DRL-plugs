@@ -58,10 +58,9 @@ class MLPGaussianActor(Module):
         self,
         state: Union[th.Tensor, np.ndarray],
         deterministic: bool,
-        keep_dtype_tensor: bool,
         return_log_prob: bool,
         device: Union[th.device, str],
-    ):
+    ) -> Union[th.Tensor, Tuple[th.Tensor, th.Tensor]]:
         state = th.Tensor(state).to(device) if type(state) is np.ndarray else state
 
         action_mean, action_std = self.forward(state)
@@ -74,11 +73,6 @@ class MLPGaussianActor(Module):
 
         if return_log_prob:
             log_prob = th.sum(dist.log_prob(x), axis=-1, keepdims=True)
-        else:
-            log_prob = None
-
-        if not keep_dtype_tensor:
-            x, log_prob = tensor2ndarray((x, log_prob))
 
         return (x, log_prob) if return_log_prob else x
 

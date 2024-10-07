@@ -116,7 +116,7 @@ class TBLogger:
 
     # ================ Additional Helper Functions ================
 
-    def add_dict(self, info: Dict[str, float], t: int):
+    def add_stats(self, info: Dict[str, float], t: int):
         for key, value in info.items():
             self.tb.add_scalar(key, value, t)
 

@@ -35,6 +35,6 @@ setup(
         "seaborn",
         "matplotlib",
         "numpy",
-	"numba"
+	    "numba"
     ],
 )
