@@ -16,6 +16,7 @@ def set_torch(default_th_dtype: th.dtype = th.float32):
     th.set_default_dtype(default_th_dtype)
     th.utils.backcompat.broadcast_warning.enabled = True
     th.utils.backcompat.keepdim_warning.enabled = True
+    th.set_float32_matmul_precision("high")
 
 
 def clean_cuda():

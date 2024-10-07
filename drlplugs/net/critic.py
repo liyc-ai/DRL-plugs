@@ -1,9 +1,8 @@
 from typing import List, Tuple
 
 import torch as th
-from torch.nn import Module, ReLU
-
 from drlplugs.net.ptu import mlp, orthogonal_init
+from torch.nn import Module, ReLU
 
 
 class MLPCritic(Module):
@@ -24,7 +23,7 @@ class MLPCritic(Module):
         )
         self.apply(orthogonal_init)
 
-    def forward(self, *input_):
+    def forward(self, *input_) -> th.Tensor:
         input_ = th.cat(input_, dim=-1)
         return self.value_net(input_)
 
