@@ -7,10 +7,10 @@ from typing import Any, Dict, List
 
 import loguru
 import tqdm
+import wandb
 from dotenv import load_dotenv
 from tensorboardX import SummaryWriter
 
-import wandb
 from drlplugs.ospy.file import copys
 
 
@@ -25,7 +25,11 @@ def _parse_record_param(
             params = param.split(".")
             value = args
             for p in params:
-                value = value[p]
+                try:
+                    value = value[p]
+                except:
+                    value = ""
+                    break
             record_param_dict[param] = value
         return record_param_dict
 
