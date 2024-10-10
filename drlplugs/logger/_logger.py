@@ -9,9 +9,8 @@ import loguru
 import tqdm
 import wandb
 from dotenv import load_dotenv
-from tensorboardX import SummaryWriter
-
 from drlplugs.ospy.file import copys
+from tensorboardX import SummaryWriter
 
 
 def _parse_record_param(
@@ -40,6 +39,8 @@ def _get_exp_name(record_param_dict: Dict[str, Any], prefix: str = None):
     else:
         exp_name = datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
     for key, value in record_param_dict.items():
+        if isinstance(value, str):
+            value = "-".join(value.split(" "))
         exp_name = exp_name + f"~{key}={value}"
     return exp_name
 

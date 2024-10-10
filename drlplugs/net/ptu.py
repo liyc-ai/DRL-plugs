@@ -1,11 +1,9 @@
+from itertools import zip_longest
 from os.path import join
 from typing import Dict, Iterable, List, Tuple, Union
 
 import torch as th
 from numba import cuda
-from stable_baselines3.common.torch_layers import create_mlp
-
-# from GPUtil import showUtilization as gpu_usage
 from torch import nn
 from torch.optim import Optimizer
 
@@ -101,6 +99,52 @@ def set_eval_mode(models: Dict[str, Union[nn.Module, th.Tensor]]):
             models[model].eval()
 
 
+# copied from stable_baselines3
+def zip_strict(*iterables: Iterable) -> Iterable:
+    r"""
+    ``zip()`` function but enforces that iterables are of equal length.
+    Raises ``ValueError`` if iterables not of equal length.
+    Code inspired by Stackoverflow answer for question #32954486.
+
+    :param \*iterables: iterables to ``zip()``
+    """
+    # As in Stackoverflow #32954486, use
+    # new object for "empty" in case we have
+    # Nones in iterable.
+    sentinel = object()
+    for combo in zip_longest(*iterables, fillvalue=sentinel):
+        if sentinel in combo:
+            raise ValueError("Iterables have different lengths")
+        yield combo
+
+
+def polyak_update(
+    params: Iterable[th.Tensor],
+    target_params: Iterable[th.Tensor],
+    tau: float,
+) -> None:
+    """
+    Perform a Polyak average update on ``target_params`` using ``params``:
+    target parameters are slowly updated towards the main parameters.
+    ``tau``, the soft update coefficient controls the interpolation:
+    ``tau=1`` corresponds to copying the parameters to the target ones whereas nothing happens when ``tau=0``.
+    The Polyak update is done in place, with ``no_grad``, and therefore does not create intermediate tensors,
+    or a computation graph, reducing memory cost and improving performance.  We scale the target params
+    by ``1-tau`` (in-place), add the new weights, scaled by ``tau`` and store the result of the sum in the target
+    params (in place).
+    See https://github.com/DLR-RM/stable-baselines3/issues/93
+
+    :param params: parameters to use to update the target params
+    :param target_params: parameters to update
+    :param tau: the soft update coefficient ("Polyak update", between 0 and 1)
+    """
+    with th.no_grad():
+        # zip does not raise an exception if length of parameters does not match.
+        for param, target_param in zip_strict(params, target_params):
+            target_param.data.mul_(1 - tau)
+            th.add(target_param.data, param.data, alpha=tau, out=target_param.data)
+
+
 # ------------------ Initialization ----------------------------
 
 
@@ -135,6 +179,50 @@ def gradient_descent(
 
 
 # ------------------------ Modules ------------------------
+
+
+def create_mlp(
+    input_dim: int,
+    output_dim: int,
+    net_arch: List[int],
+    activation_fn: nn.Module = nn.ReLU,
+    squash_output: bool = False,
+    with_bias: bool = True,
+) -> List[nn.Module]:
+    """
+    Copied from stable_baselines
+
+    Create a multi layer perceptron (MLP), which is
+    a collection of fully-connected layers each followed by an activation function.
+
+    :param input_dim: Dimension of the input vector
+    :param output_dim:
+    :param net_arch: Architecture of the neural net
+        It represents the number of units per layer.
+        The length of this list is the number of layers.
+    :param activation_fn: The activation function
+        to use after each layer.
+    :param squash_output: Whether to squash the output using a Tanh
+        activation function
+    :param with_bias: If set to False, the layers will not learn an additive bias
+    :return:
+    """
+
+    if len(net_arch) > 0:
+        modules = [nn.Linear(input_dim, net_arch[0], bias=with_bias), activation_fn()]
+    else:
+        modules = []
+
+    for idx in range(len(net_arch) - 1):
+        modules.append(nn.Linear(net_arch[idx], net_arch[idx + 1], bias=with_bias))
+        modules.append(activation_fn())
+
+    if output_dim > 0:
+        last_layer_dim = net_arch[-1] if len(net_arch) > 0 else input_dim
+        modules.append(nn.Linear(last_layer_dim, output_dim, bias=with_bias))
+    if squash_output:
+        modules.append(nn.Tanh())
+    return modules
 
 
 def variable(shape: Tuple[int, ...]):
