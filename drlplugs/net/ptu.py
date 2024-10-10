@@ -10,11 +10,14 @@ from torch.optim import Optimizer
 # --------------------- Setting --------------------
 
 
-def set_torch(default_th_dtype: th.dtype = th.float32):
+def set_torch(default_th_dtype: th.dtype = th.float32, using_cuda: bool = True):
     th.set_default_dtype(default_th_dtype)
     th.utils.backcompat.broadcast_warning.enabled = True
     th.utils.backcompat.keepdim_warning.enabled = True
     th.set_float32_matmul_precision("high")
+    if using_cuda:
+        th.backends.cudnn.deterministic = True
+        th.backends.cudnn.benchmark = False
 
 
 def clean_cuda():
