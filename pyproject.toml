@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drlplugs"
+version = "1.1.0"
+description = "An out-of-box toolbox that integrates helpers for RL."
+authors = [
+    {name = "Yi-Chen Li", email = "ychenli.x@gmail.com" }
+]
+license = {file = "LICENSE"}
+readme = "README.md"
+requires-python = ">= 3.8"
+dependencies = [
+    "loguru",
+    "python-dotenv",
+    "setuptools",
+    "tensorboardX",
+    "wandb",
+    "paramiko",
+    "tqdm",
+    "tensorboard",
+    "pandas",
+    "seaborn",
+    "matplotlib",
+    "numpy",
+    "numba",
+    "torch",
+    "h5py",
+    "gymnasium[all]"
+]
+
+[tool.setuptools.packages.find]
+include = ["drlplugs"]
