@@ -7,8 +7,9 @@ An integrated toolbox for conducting reinforcment learning experiments.
 ```bash
 git clone https://github.com/liyc-ai/DRL-plugs
 cd DRL-plugs
-pip install .
+# pip install .
 
-# update installation if you make modifications
-pip install --upgrade .
+# # update installation if you make modifications
+# pip install --upgrade .
+pip install -e . --config-settings editable_mode=compat
 ```
