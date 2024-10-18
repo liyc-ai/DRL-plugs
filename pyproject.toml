@@ -32,4 +32,6 @@ dependencies = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["drlplugs"]
+where = ["src"]
+include = ["drlplugs*"]
+namespaces = false
