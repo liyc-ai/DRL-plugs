@@ -25,7 +25,6 @@ dependencies = [
     "seaborn",
     "matplotlib",
     "numpy",
-    "numba",
     "torch",
     "h5py",
     "gymnasium[all]"

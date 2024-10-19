@@ -3,7 +3,6 @@ from os.path import join
 from typing import Dict, Iterable, List, Tuple, Union
 
 import torch as th
-from numba import cuda
 from torch import nn
 from torch.optim import Optimizer
 
@@ -18,13 +17,7 @@ def set_torch(default_th_dtype: th.dtype = th.float32, using_cuda: bool = True):
     if using_cuda:
         th.backends.cudnn.deterministic = True
         th.backends.cudnn.benchmark = False
-
-
-def clean_cuda():
-    th.cuda.empty_cache()
-    for gpu_id in range(th.cuda.device_count()):
-        cuda.select_device(gpu_id)
-        cuda.close()
+        th.cuda.empty_cache()
 
 
 # --------------------- Tensor ---------------------
@@ -59,11 +52,13 @@ def freeze_net(nets: List[nn.Module]):
 def save_torch_model(
     models: Dict[str, Union[nn.Module, th.Tensor]],
     ckpt_dir: str,
-    model_name: str = "models.pt",
+    model_name: str = "models",
+    file_ext: str = ".pt",
 ) -> str:
     """Save [Pytorch] model to a pre-specified path
     Note: Currently, only th.Tensor and th.nn.Module are supported.
     """
+    model_name = model_name + file_ext
     model_path = join(ckpt_dir, model_name)
     state_dicts = {}
     for name, model in models.items():
@@ -79,7 +74,7 @@ def load_torch_model(
     models: Dict[str, Union[nn.Module, th.Tensor]], model_path: str
 ) -> str:
     """Load [Pytorch] model from a pre-specified path"""
-    state_dicts = th.load(model_path)
+    state_dicts = th.load(model_path, weights_only=True)
     for name, model in models.items():
         if isinstance(model, th.Tensor):
             models[name].data = state_dicts[name][name].data
