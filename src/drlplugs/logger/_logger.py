@@ -9,8 +9,9 @@ import loguru
 import tqdm
 import wandb
 from dotenv import load_dotenv
-from drlplugs.ospy.file import copys
 from tensorboardX import SummaryWriter
+
+from drlplugs.ospy.file import copys
 
 
 def _parse_record_param(
@@ -58,6 +59,7 @@ class TBLogger:
         record_param: List[str] = [],
         backup_code: bool = False,
         code_files_list: List[str] = None,
+        console_output: bool = True,
         **kwargs,
     ):
         """
@@ -68,6 +70,7 @@ class TBLogger:
             record_param: Parameters used to name the log dir
             backup_code: Whether to backup code
             code_files_list: The list of code file/dir to backup
+            console_output: Whether to output to the console
         """
         self.args = args
         self.record_param = record_param
@@ -77,21 +80,25 @@ class TBLogger:
         self.record_param_dict = _parse_record_param(args, record_param)
         self.tqdm = tqdm
 
-        ## Do not change the following orders.
+        # create log dirs
         self.exp_name = _get_exp_name(self.record_param_dict)
         self.exp_dir = join(self.root_log_dir, self.exp_name)
         self._create_artifact_dir()
-        self._save_args()
 
         # init tb
         self.tb = SummaryWriter(log_dir=self.exp_dir, **kwargs)
 
         # init loguru
+        if not console_output:
+            self.console.remove()
         self.console_log_file = join(self.exp_dir, "console.log")
         self.console.add(self.console_log_file, format="{time} -- {level} -- {message}")
 
         if backup_code:
             self._backup_code()
+
+        # save arguments
+        self._save_args()
 
     def _create_artifact_dir(self):
         self.ckpt_dir = join(self.exp_dir, "ckpt")
@@ -107,8 +114,13 @@ class TBLogger:
         if self.args is None:
             return
         else:
-            pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(self.args)
+            # pp = pprint.PrettyPrinter(indent=4)
+            # pp.pprint(self.args)
+
+            # self.console.info(f"Arguments: {self.args}")
+            self.console.info(
+                f"Save arguments to {join(self.exp_dir, 'parameter.json')}"
+            )
             with open(join(self.exp_dir, "parameter.json"), "w") as f:
                 jd = json.dumps(self.args, indent=4)
                 print(jd, file=f)
@@ -138,6 +150,7 @@ class WBLogger:
         project: str = None,
         entity: str = None,
         setting_file_path: str = None,
+        console_output: bool = True,
         **kwargs,
     ):
         """
@@ -147,6 +160,7 @@ class WBLogger:
             project: Name of the project
             entity: Username or team name
             setting_file_path: The `.env` file, for environment variables, see https://docs.wandb.ai/guides/track/environment-variables for more details.
+            console_output: Whether to output to the console
         """
         if setting_file_path is not None and exists(setting_file_path):
             load_dotenv(setting_file_path)
@@ -167,5 +181,7 @@ class WBLogger:
         self.tqdm = tqdm
 
         # init loguru logger
+        if not console_output:
+            self.console.remove()
         self.console_log_file = join(self.exp_dir, "console.log")
         self.console.add(self.console_log_file, format="{time} -- {level} -- {message}")
