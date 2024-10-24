@@ -1,9 +1,7 @@
-import torch as th
-import gymnasium as gym
 import h5py
 
 from drlplugs.drls.buffer import TransitionBuffer
-from drlplugs.drls.env import make_env, get_env_info, reset_env_fn 
+from drlplugs.drls.env import get_env_info, make_env, reset_env_fn
 
 env_id = "CartPole-v1"
 seed = 10
@@ -28,14 +26,12 @@ for t in range(5):
     action = env.action_space.sample()
     next_state, reward, terminated, truncated, _ = env.step(action)
     print("state:", state, "action:", action, "reward:", reward)
-    buffer.insert_transition(
-        state, action, next_state, reward, float(terminated)
-    )
+    buffer.insert_transition(state, action, next_state, reward, float(terminated))
 
 print("states in buffer:", buffer.buffers[0])
 print("actions in buffer:", buffer.buffers[1].squeeze())
 print("reward in buffer", buffer.buffers[3].squeeze())
-    
+
 
 buffer.save_buffer(save_dir=".", file_name="buffer")
 
@@ -46,9 +42,3 @@ buffer.insert_dataset(loaded_dataset)
 print("states in buffer:", buffer.buffers[0])
 print("actions in buffer:", buffer.buffers[1].squeeze())
 print("reward in buffer", buffer.buffers[3].squeeze())
-
-
-
-    
-
-
