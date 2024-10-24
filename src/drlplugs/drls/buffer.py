@@ -1,7 +1,7 @@
 import random
 import sys
 from abc import ABC, abstractmethod
-from typing import Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union, Optional
 
 import numpy as np
 import torch as th
@@ -21,7 +21,7 @@ class BaseBuffer(ABC):
         action_dtype: Union[np.int64, np.float32],
         device: Union[str, th.device],
         buffer_size: int = -1,
-    ):
+    ) -> None:
         """If buffer size is not specified, it will continually add new items in without removal of old items."""
         self.state_shape = state_shape
         self.action_shape = action_shape
@@ -39,22 +39,22 @@ class BaseBuffer(ABC):
         self.clear()
 
     @abstractmethod
-    def init_buffer(self):
+    def init_buffer(self) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def insert_transition(self):
+    def insert_transition(self) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def insert_batch(self):
+    def insert_batch(self) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def insert_dataset(self):
+    def insert_dataset(self) -> None:
         raise NotImplementedError
 
-    def load_dataset(self, dataset: Dict[str, np.ndarray], n_traj: int = None):
+    def load_dataset(self, dataset: Dict[str, np.ndarray], n_traj: Optional[int] = None) -> None:
         """Load [n_traj] trajs into the buffer"""
 
         if n_traj is None:
@@ -66,7 +66,7 @@ class BaseBuffer(ABC):
                 new_traj = get_one_traj(dataset, start_idx, end_idx)
                 self.insert_dataset(new_traj)
 
-    def sample(self, batch_size: int = None, shuffle: bool = True):
+    def sample(self, batch_size: Optional[int] = None, shuffle: bool = True) -> List[th.Tensor]:
         """Randomly sample items from the buffer.
 
         If batch_size is not provided, we will sample all the stored items.
@@ -79,7 +79,7 @@ class BaseBuffer(ABC):
 
         return [buffer[idx] for buffer in self.buffers]
 
-    def clear(self):
+    def clear(self) -> None:
         self.init_buffer()
         self.buffers = [item.to(self.device) for item in self.buffers]
         self.ptr = 0
@@ -99,10 +99,10 @@ class TransitionBuffer(BaseBuffer):
         action_dtype: Union[np.int64, np.float32],
         device: Union[str, th.device],
         buffer_size: int = -1,
-    ):
+    ) -> None:
         super().__init__(state_shape, action_shape, action_dtype, device, buffer_size)
 
-    def init_buffer(self):
+    def init_buffer(self) -> None:
         # Unlike some popular implementations,
         # we start with an empty buffer located in self.device (may be gpu).
 
@@ -126,17 +126,17 @@ class TransitionBuffer(BaseBuffer):
         state: np.ndarray,
         action: Union[np.ndarray, int],
         next_state: np.ndarray,
-        reward: float,
-        done: float,
-    ):
+        reward: Union[np.ndarray, float],
+        done: Union[np.ndarray, float],
+    ) -> None:
         # state
-        state, next_state = (np.array(_, dtype=np.float32) for _ in [state, next_state])
+        state, next_state = (np.array(item, dtype=np.float32) for item in [state, next_state])
         # action
-        if self.action_dtype == np.int64:
+        if isinstance(action, (int, np.int64)):
             action = [action]
         action = np.array(action, dtype=self.action_dtype)
         # reward and done
-        reward, done = (np.array([_], dtype=np.float32) for _ in [reward, done])
+        reward, done = (np.array([item], dtype=np.float32) if isinstance(item, (float, np.float32)) else item for item in [reward, done])
 
         new_transition = [state, action, next_state, reward, done]
         new_transition = [th.tensor(item).to(self.device) for item in new_transition]
@@ -158,18 +158,18 @@ class TransitionBuffer(BaseBuffer):
     def insert_batch(
         self,
         states: np.ndarray,
-        actions: Union[np.ndarray, int],
+        actions: np.ndarray,
         next_states: np.ndarray,
-        rewards: float,
-        dones: bool,
-    ):
+        rewards: np.ndarray,
+        dones: np.ndarray,
+    ) -> None:
         """Insert a batch of transitions"""
         for i in range(states.shape[0]):
             self.insert_transition(
                 states[i], actions[i], next_states[i], rewards[i], dones[i]
             )
 
-    def insert_dataset(self, dataset: Dict):
+    def insert_dataset(self, dataset: Dict) -> None:
         """Insert dataset into the buffer"""
         observations, actions, next_observations, rewards, terminals = (
             dataset["observations"],
@@ -180,7 +180,7 @@ class TransitionBuffer(BaseBuffer):
         )  # we currently not consider the log_pi. But you can insert it with small modifications
         self.insert_batch(observations, actions, next_observations, rewards, terminals)
 
-    def save_buffer(self, save_dir: str, file_name: str = None):
+    def save_buffer(self, save_dir: str, file_name: Optional[str] = None) -> None:
         buffer = {
             "observations": self.buffers[0].cpu().numpy(),
             "actions": self.buffers[1].cpu().numpy(),
