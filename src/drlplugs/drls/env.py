@@ -1,10 +1,11 @@
-from typing import Dict
+from typing import Any, Dict, Tuple, Union
 
+import numpy as np
 import gymnasium as gym
 from gymnasium.spaces import Box, Discrete
 
 
-def _get_space_info(obj: gym.Space):
+def _get_space_info(obj: gym.Space) -> Tuple[Tuple[int, ...], str]:
     if isinstance(obj, Box):
         shape = obj.shape
         type_ = "float"
@@ -16,7 +17,7 @@ def _get_space_info(obj: gym.Space):
     return shape, type_
 
 
-def get_env_info(env: gym.Env):
+def get_env_info(env: gym.Env) -> Dict[str, Union[Tuple[int, ...], str]]:
     state_shape, _ = _get_space_info(env.observation_space)
     action_shape, action_dtype = _get_space_info(env.action_space)
 
@@ -36,7 +37,7 @@ def make_env(env_id: str) -> gym.Env:
     return env
 
 
-def reset_env_fn(env: gym.Env, seed: int) -> Dict:
+def reset_env_fn(env: gym.Env, seed: int) -> Tuple[np.ndarray, Dict[str, Any]]:
     next_state, info = env.reset(seed=seed)
     env.action_space.seed(seed)
     env.observation_space.seed(seed)

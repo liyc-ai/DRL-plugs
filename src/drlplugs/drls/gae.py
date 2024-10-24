@@ -1,3 +1,5 @@
+from typing import Any, Tuple
+
 import torch as th
 
 
@@ -15,7 +17,7 @@ class GAE:
         lambda_: float,
         norm_adv: bool = True,
         use_td_lambda: bool = True,
-    ):
+    ) -> None:
         self.gamma = gamma
         self.lambda_ = lambda_
         self.norm_adv = norm_adv
@@ -28,7 +30,7 @@ class GAE:
         rewards: th.Tensor,
         next_states: th.Tensor,
         dones: th.Tensor,
-    ):
+    ) -> Tuple[th.Tensor, th.Tensor]:
         """Here we can use two different methods to calculate Returns"""
         not_dones = 1.0 - dones
 
@@ -53,7 +55,7 @@ class GAE:
         rewards: th.Tensor,
         next_states: th.Tensor,
         not_dones: th.Tensor,
-    ):
+    ) -> Tuple[th.Tensor, th.Tensor]:
         Rs = th.empty_like(rewards)  # reward-to-go R_t
         advantages = th.empty_like(rewards)  # advantage
         values = value_net(states)
@@ -83,7 +85,7 @@ class GAE:
         rewards: th.Tensor,
         next_states: th.Tensor,
         not_dones: th.Tensor,
-    ):
+    ) -> Tuple[th.Tensor, th.Tensor]:
         # calcultae value
         values, next_values = value_net(states), value_net(next_states)
         # calculate TD errors.
