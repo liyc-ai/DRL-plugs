@@ -1,7 +1,7 @@
 import random
 import sys
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Tuple, Union, Optional
+from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import torch as th
@@ -54,7 +54,9 @@ class BaseBuffer(ABC):
     def insert_dataset(self) -> None:
         raise NotImplementedError
 
-    def load_dataset(self, dataset: Dict[str, np.ndarray], n_traj: Optional[int] = None) -> None:
+    def load_dataset(
+        self, dataset: Dict[str, np.ndarray], n_traj: Optional[int] = None
+    ) -> None:
         """Load [n_traj] trajs into the buffer"""
 
         if n_traj is None:
@@ -66,7 +68,9 @@ class BaseBuffer(ABC):
                 new_traj = get_one_traj(dataset, start_idx, end_idx)
                 self.insert_dataset(new_traj)
 
-    def sample(self, batch_size: Optional[int] = None, shuffle: bool = True) -> List[th.Tensor]:
+    def sample(
+        self, batch_size: Optional[int] = None, shuffle: bool = True
+    ) -> List[th.Tensor]:
         """Randomly sample items from the buffer.
 
         If batch_size is not provided, we will sample all the stored items.
@@ -130,13 +134,22 @@ class TransitionBuffer(BaseBuffer):
         done: Union[np.ndarray, float],
     ) -> None:
         # state
-        state, next_state = (np.array(item, dtype=np.float32) for item in [state, next_state])
+        state, next_state = (
+            np.array(item, dtype=np.float32) for item in [state, next_state]
+        )
         # action
         if isinstance(action, (int, np.int64)):
             action = [action]
         action = np.array(action, dtype=self.action_dtype)
         # reward and done
-        reward, done = (np.array([item], dtype=np.float32) if isinstance(item, (float, np.float32)) else item for item in [reward, done])
+        reward, done = (
+            (
+                np.array([item], dtype=np.float32)
+                if isinstance(item, (float, np.float32))
+                else item
+            )
+            for item in [reward, done]
+        )
 
         new_transition = [state, action, next_state, reward, done]
         new_transition = [th.tensor(item).to(self.device) for item in new_transition]
