@@ -1,7 +1,7 @@
 from typing import Any, Dict, Tuple, Union
 
-import numpy as np
 import gymnasium as gym
+import numpy as np
 from gymnasium.spaces import Box, Discrete
 
 
@@ -25,6 +25,7 @@ def get_env_info(env: gym.Env) -> Dict[str, Union[Tuple[int, ...], str]]:
         "state_shape": state_shape,
         "action_shape": action_shape,
         "action_dtype": action_dtype,
+        "action_scale": float(env.action_space.high[0]),
     }
 
 
