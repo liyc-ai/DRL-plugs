@@ -21,12 +21,16 @@ def get_env_info(env: gym.Env) -> Dict[str, Union[Tuple[int, ...], str]]:
     state_shape, _ = _get_space_info(env.observation_space)
     action_shape, action_dtype = _get_space_info(env.action_space)
 
-    return {
+    env_info = {
         "state_shape": state_shape,
         "action_shape": action_shape,
         "action_dtype": action_dtype,
-        "action_scale": float(env.action_space.high[0]),
     }
+
+    if isinstance(env.action_space, Box):
+        env_info["action_scale"] = float(env.action_space.high[0])
+
+    return env_info
 
 
 def make_env(env_id: str) -> gym.Env:
