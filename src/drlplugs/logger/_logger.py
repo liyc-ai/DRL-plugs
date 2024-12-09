@@ -1,16 +1,14 @@
 import json
 import os
 from datetime import datetime
-from os.path import exists, join
+from os.path import join
 from typing import Any, Dict, List
 
 import loguru
 import tqdm
-import wandb
-from dotenv import load_dotenv
 from tensorboardX import SummaryWriter
 
-from drlplugs.ospy.file import copys
+from ..ospy.file import copys
 
 
 def _parse_record_param(
@@ -132,55 +130,6 @@ class TBLogger:
 
     # ================ Additional Helper Functions ================
 
-    def add_stats(self, info: Dict[str, float], t: int):
-        for key, value in info.items():
+    def add_stats(self, stats: Dict[str, float], t: int):
+        for key, value in stats.items():
             self.tb.add_scalar(key, value, t)
-
-
-class WBLogger:
-    """Wandb Logger"""
-
-    console = loguru.logger
-
-    def __init__(
-        self,
-        args: Dict[str, Any] = {},
-        record_param: List[str] = [],
-        project: str = None,
-        entity: str = None,
-        setting_file_path: str = None,
-        console_output: bool = True,
-        **kwargs,
-    ):
-        """
-        Args:
-            args: Hyper-parameters and configs
-            record_param: Parameters used to name the log dir
-            project: Name of the project
-            entity: Username or team name
-            setting_file_path: The `.env` file, for environment variables, see https://docs.wandb.ai/guides/track/environment-variables for more details.
-            console_output: Whether to output to the console
-        """
-        if setting_file_path is not None and exists(setting_file_path):
-            load_dotenv(setting_file_path)
-        if kwargs.get("dir") and not exists(kwargs.get("dir")):
-            os.makedirs(kwargs["dir"])
-        # init wandb Run, https://docs.wandb.ai/ref/python/init
-        self.record_param_dict = _parse_record_param(args, record_param)
-        self.exp_name = _get_exp_name(self.record_param_dict)
-        self.wb = wandb.init(
-            config=args,
-            name=self.exp_name,
-            project=project,
-            entity=entity,
-            **kwargs,
-        )  # wandb.sdk.wandb_run.Run
-        self.exp_dir = wandb.run.dir
-
-        self.tqdm = tqdm
-
-        # init loguru logger
-        if not console_output:
-            self.console.remove()
-        self.console_log_file = join(self.exp_dir, "console.log")
-        self.console.add(self.console_log_file, format="{time} -- {level} -- {message}")

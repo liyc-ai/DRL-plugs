@@ -14,5 +14,5 @@ def set_random_seed(seed: int) -> None:
     random.seed(seed)
     # Seed numpy RNG
     np.random.seed(seed)
-    # seed the RNG for all devices (both CPU and CUDA)
+    # seed the RNG for all devices
     th.manual_seed(seed)

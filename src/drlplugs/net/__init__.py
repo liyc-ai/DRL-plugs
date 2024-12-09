@@ -1,6 +1,6 @@
-from drlplugs.net.actor import MLPDeterministicActor, MLPGaussianActor
-from drlplugs.net.critic import MLPCritic, MLPDuleQNet, MLPTwinCritic
-from drlplugs.net.ptu import (
+from ..net.actor import MLPDeterministicActor, MLPGaussianActor
+from ..net.critic import MLPCritic, MLPDuleQNet, MLPTwinCritic
+from ..net.ptu import (
     cnn,
     freeze_net,
     gradient_descent,

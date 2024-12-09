@@ -14,10 +14,8 @@ readme = "README.md"
 requires-python = ">= 3.8"
 dependencies = [
     "loguru",
-    "python-dotenv",
     "tensorboard",
     "tensorboardX",
-    "wandb",
     "paramiko",
     "tqdm",
     "pandas",
@@ -31,14 +29,6 @@ dependencies = [
 [project.optional-dependencies]
 torch = [
     "torch"
-]
-
-tensorflow = [
-    "tensorflow"
-]
-
-jax = [
-    "jax[cuda12]"
 ]
 
 [tool.setuptools.packages.find]

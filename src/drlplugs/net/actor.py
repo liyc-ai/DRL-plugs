@@ -5,7 +5,7 @@ import torch as th
 from torch.distributions.normal import Normal
 from torch.nn import Module, ReLU
 
-from drlplugs.net.ptu import mlp, orthogonal_init, variable
+from ..net.ptu import mlp, orthogonal_init, variable
 
 
 class MLPGaussianActor(Module):

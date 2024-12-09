@@ -6,11 +6,7 @@ from typing import Dict, List, Optional, Tuple, Union
 import numpy as np
 import torch as th
 
-from drlplugs.ospy.dataset import (
-    get_one_traj,
-    save_dataset_to_h5,
-    split_dataset_into_trajs,
-)
+from ..ospy.dataset import get_one_traj, save_dataset_to_h5, split_dataset_into_trajs
 
 
 class BaseBuffer(ABC):

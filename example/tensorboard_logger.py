@@ -42,7 +42,7 @@ The output is like below, where `ckpt/` (gotten by `logger.ckpt_dir`) are used t
 # For more apis, please see https://github.com/lanpa/tensorboardX
 logger.tb.add_scalar(tag="train/return", scalar_value=10, global_step=0)
 
-logger.add_dict({"loss": 0.5, "accuracy": 0.8}, t=0)
+logger.add_stats({"loss": 0.5, "accuracy": 0.8}, t=0)
 
 # loguru.
 # For more apis, please see https://github.com/Delgan/loguru

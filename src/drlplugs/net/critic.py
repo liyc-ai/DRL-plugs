@@ -1,8 +1,9 @@
 from typing import List, Tuple
 
 import torch as th
-from drlplugs.net.ptu import mlp, orthogonal_init
 from torch.nn import Module, ReLU
+
+from ..net.ptu import mlp, orthogonal_init
 
 
 class MLPCritic(Module):
@@ -12,7 +13,7 @@ class MLPCritic(Module):
         output_shape: Tuple[int,],
         net_arch: List[int],
         activation_fn: Module = ReLU,
-        **kwarg
+        **kwarg,
     ):
         """
         :param input_dim: input dimension (for vector) or input channel (for image)
@@ -35,7 +36,7 @@ class MLPTwinCritic(Module):
         output_shape: Tuple[int,],
         net_arch: List[int],
         activation_fn: Module = ReLU,
-        **kwarg
+        **kwarg,
     ):
         super().__init__()
 
@@ -64,7 +65,7 @@ class MLPDuleQNet(Module):
         adv_head: List[int],
         activation_fn: Module = ReLU,
         mix_type: str = "max",
-        **kwarg
+        **kwarg,
     ):
         super().__init__()
         self.feature_extrator, feature_shape = mlp(
