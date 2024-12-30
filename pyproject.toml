@@ -3,7 +3,7 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "drlplugs"
+name = "exputils"
 version = "1.2.0"
 description = "An out-of-box toolbox that integrates helpers for RL."
 authors = [
@@ -33,5 +33,5 @@ torch = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["drlplugs*"]
+include = ["exputils*"]
 namespaces = false

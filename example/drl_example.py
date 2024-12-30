@@ -1,7 +1,7 @@
 import h5py
 
-from drlplugs.drls.buffer import TransitionBuffer
-from drlplugs.drls.env import get_env_info, make_env, reset_env_fn
+from exputils.drls.buffer import TransitionBuffer
+from exputils.drls.env import get_env_info, make_env, reset_env_fn
 
 env_id = "CartPole-v1"
 seed = 10

@@ -1,4 +1,4 @@
-from drlplugs.logger import TBLogger, archive_logs
+from exputils.logger import TBLogger, archive_logs
 
 args = {"description": "TEST", "lr": 3e-4}
 

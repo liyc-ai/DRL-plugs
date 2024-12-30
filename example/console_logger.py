@@ -1,4 +1,4 @@
-from drlplugs.logger import console_logger
+from exputils.logger import console_logger
 
 console_logger.add("console.log")
 
