@@ -1,12 +1,12 @@
 # rlplugs
 
-An integrated toolbox for conducting reinforcment learning experiments.
+An integrated toolbox for conducting experiments.
 
 ## Installation
 
 ```bash
-git clone https://github.com/liyc-ai/DRL-plugs
-cd DRL-plugs
+git clone https://github.com/liyc-ai/ExpUtils
+cd ExpUtils
 pip install .
 
 # update installation if you make modifications
