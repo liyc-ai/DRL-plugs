@@ -1,4 +1,4 @@
-# rlplugs
+# ExpUtils
 
 An integrated toolbox for conducting experiments.
 

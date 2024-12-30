@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "exputils"
 version = "1.2.0"
-description = "An out-of-box toolbox that integrates helpers for RL."
+description = "An integrated toolbox for conducting experiments."
 authors = [
     {name = "Yi-Chen Li", email = "ychenli.x@gmail.com" }
 ]
